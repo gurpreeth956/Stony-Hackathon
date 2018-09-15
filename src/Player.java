@@ -1,8 +1,9 @@
 
 import javafx.geometry.Point2D;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 
-public class Player {
+public class Player extends Pane{
 
 	ImageView iv;
 	int offsetX = 0;
@@ -48,9 +49,6 @@ public class Player {
 		this.y = y;
 	}
 
-	public double getRotate() {
-		return iv.getRotate();
-	}
 
 	public void setVelocity(Point2D velocity) {
 		this.velocity = velocity;
