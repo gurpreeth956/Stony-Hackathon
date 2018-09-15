@@ -35,12 +35,12 @@ public class Main extends Application {
 	Stage stage;
 	Scene scene;
 	static Pane gameRoot;
-	static BorderPane menuRoot, gameOverRoot;
+	static BorderPane menuRoot, gameOverRoot, howRoot, scoreRoot;
 
 	static Player player;
 	Earth earth;
 
-	static VBox exitRoot;
+	static VBox exitRoot, menuBox;
 
 	private long lastHitTime = 0;
 	private long timeOfLastProjectile = 0;
@@ -96,16 +96,41 @@ public class Main extends Application {
 
 		createGameRoot();
 		createGameOverRoot();
+		createHowRoot();
+		createScoreRoot();
 		scene.setOnKeyPressed(e -> keys.put(e.getCode(), true));
 		scene.setOnKeyReleased(e -> keys.put(e.getCode(), false));
 
-		Button bttn = new Button("Start");
-		bttn.setOnAction(e -> {
+		Button startBtn = new Button("Start");
+		startBtn.setOnAction(e -> {
 			stage.getScene().setRoot(gameRoot);
 			newGame();
 		});
+		Button playBtn = new Button("How to Play");
+		playBtn.setOnAction(e -> {
+			stage.getScene().setRoot(howRoot);
+		});
+		Button scoreBtn = new Button("High Scores");
+		scoreBtn.setOnAction(e -> {
+			stage.getScene().setRoot(scoreRoot);
+		});
+		Button exitBtn = new Button("Quit");
+		exitBtn.setOnAction(e -> {
+			stage.getScene().setRoot(exitRoot);
 
-		menuRoot.setCenter(bttn);
+			yesExit.setOnAction(eY -> {
+				Platform.exit();
+				gameplay = false;
+				clearAll();
+			});
+			noExit.setOnAction(eN -> {
+				stage.getScene().setRoot(gameOverRoot);
+			});
+		});
+		menuBox = new VBox(10);
+		menuBox.getChildren().addAll(startBtn, playBtn, scoreBtn, exitBtn);
+		menuRoot.setCenter(menuBox);
+		menuBox.setAlignment(Pos.CENTER);
 		Text title = new Text("THE AWESOME SPACE GAME");
 		title.setFont(Font.font("Arial", 50));
 		menuRoot.setTop(title);
@@ -129,6 +154,7 @@ public class Main extends Application {
 		stage.resizableProperty().setValue(Boolean.FALSE);
 		stage.setResizable(false);
 		stage.show();
+	}
 	}
 
 	public void update(Stage stage) {
@@ -451,4 +477,164 @@ public class Main extends Application {
             gameRoot.getChildren().addAll(earth.middle, earth.left, earth.right);
             
     }
+	public void createGameRoot() {
+		gameRoot = new Pane();
+		gameRoot.setId("backgroundgame");
+		Label healthLabel = new Label("Health: ");
+		healthLabel.setFont(new Font("Arial", 20));
+		healthLabel.setTextFill(Color.WHITE);
+		healthLabel.toFront();
+		healthBarOutline = new Rectangle(screenSize.getWidth() - 121, 9, 102, 22);
+		healthBarOutline.setFill(Color.TRANSPARENT);
+		healthBarOutline.setStroke(Color.BLACK);
+		lostHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
+		lostHealth.setFill(Color.RED);
+		actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
+		actualHealth.setFill(Color.web("#00F32C"));
+		health = new VBox(10);
+		health.getChildren().addAll(healthLabel);
+		health.setTranslateX(screenSize.getWidth() - 200);
+		health.setTranslateY(10);
+		scoreLabel = new Label("Score: ");
+		scoreLabel.setFont(new Font("Arial", 20));
+		scoreLabel.setTextFill(Color.WHITE);
+		coinAndScore = new VBox(10);
+		coinAndScore.getChildren().addAll(scoreLabel);
+		coinAndScore.setTranslateX(10);
+		coinAndScore.setTranslateY(10);
+		coinAndScore.toBack();
+
+		//For earth stuff
+		earthHealthBar = new Rectangle(355, 20, 541, 20);
+		earthHealthBar.setFill(Color.TRANSPARENT);
+		earthHealthBar.setStroke(Color.BLACK);
+		earthLostHealth = new Rectangle(356, 21, 540, 19);
+		earthLostHealth.setFill(Color.RED);
+		earthActualHealth = new Rectangle(356, 21, 540, 19);
+		earthActualHealth.setFill(Color.GREEN);
+	}
+
+	public void createHowRoot() {
+		howRoot = new BorderPane();
+		Text howText = new Text("Use arrow keys to move shuttle and space bar to shoot. Destroy the asteroids and save the astronauts.");
+		howText.setFont(Font.font("Arial", 20));
+		howRoot.setCenter(howText);
+		BorderPane.setAlignment(howText, Pos.CENTER);
+		BorderPane.setMargin(howText, new Insets(10));
+		Button backBtn = new Button("Back to Menu");
+		backBtn.setOnAction(e -> {
+			stage.getScene().setRoot(menuRoot);
+			BorderPane.setAlignment(menuBox, Pos.CENTER);
+		});
+		howRoot.setBottom(backBtn);
+		BorderPane.setAlignment(backBtn, Pos.BOTTOM_CENTER);
+	}
+
+	public void createScoreRoot() throws FileNotFoundException {
+		scoreRoot = new BorderPane();
+		Text scoreTitle = new Text("High Scores");
+		File file = new File("C:\\Users\\rhuan\\OneDrive\\Documents\\GitHub\\Stony-Hackathon\\src\\HighScores.txt");
+		Scanner scan = new Scanner(file);
+		VBox scoreBox = new VBox(10);
+		while (scan.hasNextLine()) {
+			String str = scan.nextLine();
+			Text score = new Text(str);
+			score.setFont(Font.font("Arial", 20));
+			scoreBox.getChildren().add(score);
+		}
+		scoreTitle.setFont(Font.font("Arial", 50));
+		BorderPane.setAlignment(scoreTitle, Pos.CENTER);
+		scoreRoot.setTop(scoreTitle);
+		scoreRoot.setCenter(scoreBox);
+		scoreBox.setAlignment(Pos.CENTER);
+		Button backBtn = new Button("Back to Menu");
+		backBtn.setOnAction(e -> {
+			stage.getScene().setRoot(menuRoot);
+			BorderPane.setAlignment(menuBox, Pos.CENTER);
+		});
+		scoreRoot.setBottom(backBtn);
+		BorderPane.setAlignment(backBtn, Pos.BOTTOM_CENTER);
+	}
+
+	public void createGameOverRoot() {
+		VBox gameOverBox = addGameOverButtons(stage);
+		gameOverBox.setAlignment(Pos.TOP_CENTER);
+		gameOverRoot = new BorderPane();
+		gameOverRoot.setId("menu");
+		gameOverRoot.setCenter(gameOverBox);
+		exitRoot = new VBox(20);
+		Label exitString = new Label("Are you sure you want to exit?");
+		exitString.setFont(Font.font("Arial", 25));
+		HBox exitButtons = new HBox(10);
+		exitButtons.getChildren().addAll(yesExit, noExit);
+		exitButtons.setAlignment(Pos.CENTER);
+		exitRoot.getChildren().addAll(exitString, exitButtons);
+		exitRoot.setId("menu");
+		exitRoot.setAlignment(Pos.CENTER);
+	}
+
+	public VBox addGameOverButtons(Stage stage) {
+		VBox vbox = new VBox();
+		vbox.setPadding(new Insets(20));
+		vbox.setSpacing(10);
+
+		Button exitBtn = new Button("QUIT");
+		exitBtn.setOnAction(e -> {
+			stage.getScene().setRoot(exitRoot);
+
+			yesExit.setOnAction(eY -> {
+				Platform.exit();
+				gameplay = false;
+				clearAll();
+			});
+			noExit.setOnAction(eN -> {
+				stage.getScene().setRoot(gameOverRoot);
+			});
+		});
+
+		Button newBtn = new Button("NEW GAME");
+		newBtn.setOnAction(e -> {
+			stage.getScene().setRoot(gameRoot);
+			clearAll();
+			newGame();
+		});
+
+		vbox.getChildren().addAll(exitBtn, newBtn);
+		return vbox;
+	}
+
+	public void clearAll() {
+		projectiles.clear();
+		projectilesToRemove.clear();
+		debrisToRemove.clear();
+		debris.clear();
+		scoreLabel.setText("Score: ");
+		gameRoot.getChildren().clear();
+	}
+
+	public void newGame() {
+		player = new Player("file:src/sprites/player.png", 5, 25, 25, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+		earth = new Earth("file:src/sprites/EarthM.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+		gameRoot.setId("backgroundgame");
+		actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
+		actualHealth.setFill(Color.web("#00F32C"));
+		earthActualHealth = new Rectangle(356, 21, 540, 19);
+		earthActualHealth.setFill(Color.GREEN);
+		gameRoot.getChildren().addAll(player, earth, health, healthBarOutline, lostHealth,
+				actualHealth, coinAndScore, earthActualHealth, earthHealthBar, earthLostHealth);
+		coinAndScore.toFront();
+		scoreLabel.toFront();
+		health.toFront();
+		healthBarOutline.toFront();
+		lostHealth.toFront();
+		actualHealth.toFront();
+		earthHealthBar.toFront();
+		earthLostHealth.toFront();
+		earthActualHealth.toFront();
+		gameplay = true;
+
+		//Collision rectangle additions
+		gameRoot.getChildren().addAll(earth.middle, earth.left, earth.right);
+
+	}
 }
