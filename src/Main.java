@@ -188,12 +188,21 @@ public class Main extends Application {
 			if (isPressed(KeyCode.SPACE)) {
 				shoot();
 			}
-			if (Math.random() < 0.005) {
+                        if (player.getScore() < 50) {
+                            if (Math.random() < 0.005) {
 				createDebris();
-			}
-			if (Math.random() < 0.005) {
+                            }
+                            if (Math.random() < 0.005) {
 				createAstronaut();
-			}
+                            }
+                        } else {
+                            if (Math.random() < 0.01) {
+				createDebris();
+                            }
+                            if (Math.random() < 0.01) {
+				createAstronaut();
+                            }
+                        }
 			for (Projectile proj : projectiles) {
 				updateProjectiles(proj);
 			}

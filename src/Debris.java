@@ -72,14 +72,13 @@ public class Debris extends Pane {
 	}
 
 	public void move(Rectangle2D screenSize) {
-		if (pointer < xpoints.length) {
-			this.setTranslateX(xpoints[pointer]);
-			this.setTranslateY(ypoints[pointer]);
-                        this.setX(xpoints[pointer]);
-                        this.setY(ypoints[pointer]);
-			pointer++;
-		}
-
+            if (pointer < xpoints.length) {
+                this.setTranslateX(xpoints[pointer]);
+                this.setTranslateY(ypoints[pointer]);
+                this.setX(xpoints[pointer]);
+                this.setY(ypoints[pointer]);
+                pointer++;
+            }
 	}
 
 	public void linepoints(Rectangle2D screenSize, int speed) {
