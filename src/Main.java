@@ -66,9 +66,6 @@ public class Main extends Application {
 
 	private List<Astronaut> astronauts = new ArrayList();
 	private List<Astronaut> astronautsToRemove = new ArrayList();
-        
-        private List<Explosion> explosions = new ArrayList();
-        private List<Explosion> explosToRemove = new ArrayList();
 
 	private final HashMap<KeyCode, Boolean> keys = new HashMap();
 	static Rectangle2D screenSize = Screen.getPrimary().getVisualBounds();
@@ -105,7 +102,6 @@ public class Main extends Application {
 		createGameRoot();
 		createGameOverRoot();
 		createHowRoot();
-		createScoreRoot();
                 createPauseRoot();
 		scene.setOnKeyPressed(e -> keys.put(e.getCode(), true));
 		scene.setOnKeyReleased(e -> keys.put(e.getCode(), false));
@@ -214,9 +210,6 @@ public class Main extends Application {
 			for (Astronaut astro : astronauts) {
 				updateAstronaut(astro);
 			}
-                        for (Explosion explo : explosions) {
-                            //updateExplosions(explo);
-                        }
                         
                         if (time < 0 || time > 250) {
                             if (isPressed(KeyCode.ESCAPE)) {
@@ -278,8 +271,6 @@ public class Main extends Application {
 		}
 		if (debri.isEarthColliding(earth)) {
 			earth.hit();
-                        Explosion explo = new Explosion("file:src/sprites/Explosion.png", (int)debri.getX() + debri.width/2, (int)debri.getY() + debri.height/2, 22, 28);
-			gameRoot.getChildren().add(explo);
 			gameRoot.getChildren().remove(earthActualHealth);
 			earthActualHealth = new Rectangle(356, 21, earth.getHealth() * 108, 19);
 			earthActualHealth.setFill(Color.GREEN);
@@ -388,7 +379,6 @@ public class Main extends Application {
 		projectiles.removeAll(projectilesToRemove);
 		debris.removeAll(debrisToRemove);
 		astronauts.removeAll(astronautsToRemove);
-                explosions.removeAll(explosToRemove);
 		projectilesToRemove.clear();
 		debrisToRemove.clear();
 		astronautsToRemove.clear();
@@ -514,7 +504,6 @@ public class Main extends Application {
         if (alreadyStarted) {
             gameRoot.getChildren().removeAll(player, earth, health, healthBarOutline, lostHealth,
                             actualHealth, coinAndScore, earthActualHealth, earthHealthBar, earthLostHealth);
-            explosions.clear();
         }
             player = new Player("file:src/sprites/player.png", 5, 25, 25, (int) screenSize.getWidth(), (int) screenSize.getHeight());
             earth = new Earth("file:src/sprites/Earth.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
@@ -541,32 +530,6 @@ public class Main extends Application {
             gameRoot.getChildren().addAll(earth.middle);
             
     }
-
-	public void createScoreRoot() throws FileNotFoundException {
-		/*scoreRoot = new BorderPane();
-		Text scoreTitle = new Text("High Scores");
-		File file = new File("file:src/HighScores.txt");
-		Scanner scan = new Scanner(file);
-		VBox scoreBox = new VBox(10);
-		while (scan.hasNextLine()) {
-			String str = scan.nextLine();
-			Text score = new Text(str);
-			score.setFont(Font.font("Arial", 20));
-			scoreBox.getChildren().add(score);
-		}
-		scoreTitle.setFont(Font.font("Arial", 50));
-		BorderPane.setAlignment(scoreTitle, Pos.CENTER);
-		scoreRoot.setTop(scoreTitle);
-		scoreRoot.setCenter(scoreBox);
-		scoreBox.setAlignment(Pos.CENTER);
-		Button backBtn = new Button("Back to Menu");
-		backBtn.setOnAction(e -> {
-			stage.getScene().setRoot(menuRoot);
-			BorderPane.setAlignment(menuBox, Pos.CENTER);
-		});
-		scoreRoot.setBottom(backBtn);
-		BorderPane.setAlignment(backBtn, Pos.BOTTOM_CENTER);*/
-	}
         
 	public void createHowRoot() {
 		Text title = new Text("How To Play");
