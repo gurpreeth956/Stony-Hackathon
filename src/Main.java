@@ -16,7 +16,6 @@ public class Main extends Application {
     static Pane gameRoot;
     static BorderPane menuRoot;
     
-    
     static Rectangle2D screenSize = Screen.getPrimary().getVisualBounds();
     
     public static void main(String[] args) {
@@ -29,7 +28,8 @@ public class Main extends Application {
         gameRoot = new Pane();
         menuRoot = new BorderPane();
         scene = new Scene(menuRoot, screenSize.getWidth(), screenSize.getHeight());
-        
+        scene.getStylesheets().addAll(this.getClass().getResource("Design.css").toExternalForm());
+		
         Button bttn = new Button("Start");
         bttn.setOnAction(e -> {
             stage.getScene().setRoot(gameRoot);
