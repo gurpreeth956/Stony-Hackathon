@@ -4,17 +4,16 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.Rectangle;
 
 public class Projectile extends Pane {
 
-    ImageView iv;
-    int offsetX = 0;
-    int offsetY = 0;
-    int width;
-    int height;
-    int x; //Proj xPos
-    int y; //Proj yPos
+	ImageView iv;
+	int offsetX = 0;
+	int offsetY = 0;
+	int width;
+	int height;
+	double x; //Proj xPos
+	double y; //Proj yPos
 
 	double vx;
 	double vy;
@@ -42,10 +41,6 @@ public class Projectile extends Pane {
             this.getChildren().addAll(iv);
     }
 
-	/*public void move() {
-		this.setTranslateX(this.getTranslateX() + this.getVelocityX());
-		this.setTranslateY(this.getTranslateY() + this.getVelocityY());
-	}*/
 	public void move(Earth earth) {
 		targetX = earth.getX() - this.x;
 		targetY = earth.getY() - this.y;
@@ -65,8 +60,8 @@ public class Projectile extends Pane {
 
 		this.setTranslateX(this.getTranslateX() + vx);
 		this.setTranslateY(this.getTranslateY() + vy);
-		this.x += (int) vx; //X is int and vx is double 
-		this.y += (int) vy; //casting to int improves missile accuracy
+		this.x += vx; //X is int and vx is double 
+		this.y += vy; //casting to int improves missile accuracy
 	}
 
 	public int getVelocityX() {

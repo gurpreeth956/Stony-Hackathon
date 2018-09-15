@@ -8,8 +8,8 @@ import javafx.scene.layout.Pane;
 public class Player extends Pane {
 
     ImageView iv;
-    int offsetX = 0;
-    int offsetY = 0;
+    int offsetX = 9;
+    int offsetY = 7;
     int width = 0;
     int height = 0;
     int screenWidth;
@@ -53,8 +53,6 @@ public class Player extends Pane {
             if (dir) {
                 this.setTranslateX(((screenWidth/2)-(width/2)) + 100 * (Math.cos(this.getRotate() - angleChange)));
                 this.setTranslateY(((screenHeight/2)-(height/2)) + 100 * (Math.sin(this.getRotate() - angleChange)));
-                //System.out.println(("cos" + (100 * Math.cos((int)this.getRotate() - 5))));
-                //System.out.println(("sin" + (100 * Math.sin((int)this.getRotate() - 5))));
                 this.setX(((screenWidth/2)-(width/2)) + (int)(100 * Math.cos(this.getRotate() - angleChange)));
                 this.setY(((screenHeight/2)-(height/2)) + (int)(100 * Math.sin(this.getRotate() - angleChange)));
                 this.setRotate(this.getRotate() - angleChange);
@@ -66,7 +64,6 @@ public class Player extends Pane {
                 this.setX(((screenWidth/2)-(width/2)) + (int)(100 * Math.cos(this.getRotate() + angleChange)));
                 this.setY(((screenHeight/2)-(height/2)) + (int)(100 * Math.sin(this.getRotate() + angleChange)));
                 this.setRotate(this.getRotate() + angleChange);
-                //this.setRotate(Math.atan((this.getY() - ((screenHeight/2)))/(this.getX() - ((screenWidth/2)))));
             }
             timeOfLastMove = timeNow;
         }
