@@ -47,10 +47,10 @@ public class Main extends Application {
         });
 
         AnimationTimer timer = new AnimationTimer() {
-                @Override
-                public void handle(long now) {
-                        update(stage);
-                }
+            @Override
+            public void handle(long now) {
+                    update(stage);
+            }
         };
         timer.start();
 
@@ -73,7 +73,7 @@ public class Main extends Application {
                 player.moveClockwise(true);
         }
         if (isPressed(KeyCode.LEFT)) {
-                player.moveClockwise(false);
+                player.moveClockwise(true); //make false
         }
         if (isPressed(KeyCode.SPACE)) {
                 shoot();
@@ -89,9 +89,11 @@ public class Main extends Application {
     }
 
     public void createGameRoot() {
-        player = new Player((int) screenSize.getWidth(), (int) screenSize.getHeight());
+        player = new Player("file:src/sprites/Player.png", 3, 33, 33, (int) screenSize.getWidth(), (int) screenSize.getHeight());
         earth = new Earth("file:src/sprites/EarthM.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
         gameRoot.setId("backgroundgame");
-        gameRoot.getChildren().addAll(earth);
+        gameRoot.getChildren().addAll(player, earth);
+        earth.toFront();
+        player.toFront();
     }
 }
