@@ -9,117 +9,180 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+
 public class Debris extends Pane {
 
-	//Create damage variable for player hit??
-	public ImageView iv;
-	int offsetX = 0;
-	int offsetY = 0;
-	int width;
-	int height;
-	public double x; //Enemy xPos
-	public double y; //Enemy yPos
-	int coin;
-	int score;
-	int enemySpeed;
+    //Create damage variable for player hit?
+    public ImageView iv;
+    int offsetX = 0;
+    int offsetY = 0;
+    int width;
+    int height;
+    public double x; //Enemy xPos
+    public double y; //Enemy yPos
+    int coin;
+    int score;
+    int enemySpeed;
+    
+    public double xdist;
+    public double ydist;
+    public double[] xpoints;
+    public double[] ypoints;
+    public int pointer = 0;
 
-	public double xdist;
-	public double ydist;
+    public Rectangle healthBarOutline;
+    public Rectangle actualHealth;
+    public Rectangle lostHealth;
+    public boolean alive = true;
+    public int health;
+    public int totalHealth;
 
-	public Rectangle healthBarOutline;
-	public Rectangle actualHealth;
-	public Rectangle lostHealth;
-	public boolean alive = true;
-	public int health;
-	public int totalHealth;
+    //currently used only for bosses
+    public Label nameLabel;
 
-	//currently used only for bosses
-	public Label nameLabel;
+    public Debris(String img, double x, double y,int health, int coin, int width, int height, Rectangle2D screenSize) {
+            this.setTranslateX(x);
+            this.setTranslateY(y);
+            this.x = x;
+            this.y = y;
+            //calcDistances(screenSize);
+            linepoints(screenSize, 350);
+            Image enemyImage = new Image(img);
+            ImageView enemyIV = new ImageView(enemyImage);
+            this.iv = enemyIV;
+            this.iv.setViewport(new Rectangle2D(offsetX, offsetY, width, height));
+            this.health = health;
+            this.totalHealth = health;
+            this.coin = coin;
+            this.score = coin;
+            this.width = width;
+            this.height = height;
+            this.getChildren().addAll(iv);
 
-	public Debris(String img, double x, double y, int health, int coin, int width, int height, Rectangle2D screenSize) {
-		this.setTranslateX(x);
-		this.setTranslateY(y);
-		this.x = x;
-		this.y = y;
-		calcDistances(screenSize);
-		Image enemyImage = new Image(img);
-		ImageView enemyIV = new ImageView(enemyImage);
-		this.iv = enemyIV;
-		this.iv.setViewport(new Rectangle2D(offsetX, offsetY, width, height));
-		this.health = health;
-		this.totalHealth = health;
-		this.coin = coin;
-		this.score = coin;
-		this.width = width;
-		this.height = height;
-		this.getChildren().addAll(iv);
+            healthBarOutline = new Rectangle(x - 1, y - 6, width + 2, 4);
+            healthBarOutline.setFill(Color.TRANSPARENT);
+            healthBarOutline.setStroke(Color.BLACK);
+            lostHealth = new Rectangle(x, y - 5, width, 3);
+            lostHealth.setFill(Color.RED);
+            actualHealth = new Rectangle(x, y - 5, width, 3);
+            actualHealth.setFill(Color.GREEN);
+            actualHealth.toFront();
+    }
 
-		healthBarOutline = new Rectangle(x - 1, y - 6, width + 2, 4);
-		healthBarOutline.setFill(Color.TRANSPARENT);
-		healthBarOutline.setStroke(Color.BLACK);
-		lostHealth = new Rectangle(x, y - 5, width, 3);
-		lostHealth.setFill(Color.RED);
-		actualHealth = new Rectangle(x, y - 5, width, 3);
-		actualHealth.setFill(Color.GREEN);
-		actualHealth.toFront();
-	}
+    public void setCharacterView(int offsetX, int offsetY) {
+            this.iv.setViewport(new Rectangle2D(offsetX, offsetY, width, height));
+    }
 
-	public void setCharacterView(int offsetX, int offsetY) {
-		this.iv.setViewport(new Rectangle2D(offsetX, offsetY, width, height));
-	}
-
-	public void move(Rectangle2D screenSize) { //note width and height here are screen size
+   public void move(Rectangle2D screenSize) { //note width and height here are screen size
 		//Create equation to make 
-		double centerx = screenSize.getWidth() / 2;
-		double centery = screenSize.getHeight() / 2;
-		if (x + 80 <= centerx && y + 80 <= centery) { //quad 2
-			moveX(xdist / ydist, ydist / xdist);
-			moveY(ydist / xdist, xdist / ydist);
-		}
-		if (x + 80 > centerx && y + 80 <= centery) { //quad 1
-			moveX(xdist / ydist, -1 * (ydist / xdist));
-			moveY(ydist / xdist, xdist / ydist);
-		}
-		if (x + 80 <= centerx && y + 80 > centery) { //quad 3
-			moveX(xdist / ydist, ydist / xdist);
-			moveY(ydist / xdist, -1 * (xdist / ydist));
-		}
-		if (x + 80 > centerx && y + 80 > centery) { //quad 4
-			moveX(xdist / ydist, -1 * (ydist / xdist));
-			moveY(ydist / xdist, -1 * (xdist / ydist));
-		}
+            /*double centerx = screenSize.getWidth()/2;
+            double centery = screenSize.getHeight()/2;
+            if(x + 80 <= centerx && y + 80 <= centery){ //quad 2
+                moveX(xdist/ydist, xspeed);
+                moveY(ydist/xdist, yspeed);
+            }
+            if(x + 80 > centerx && y + 80 <= centery){ //quad 1
+                moveX(xdist/ydist, -1*xspeed);
+                moveY(ydist/xdist, yspeed);
+            }
+            if(x + 80 <= centerx && y + 80 > centery){ //quad 3
+                moveX(xdist/ydist, xspeed);
+                moveY(ydist/xdist, -1*yspeed);
+            }
+            if(x + 80 > centerx && y + 80 > centery){ //quad 4
+                moveX(xdist/ydist, -1*xspeed);
+                moveY(ydist/xdist, -1*xspeed);
+            }
+            calcDistances(screenSize);*/
+            if(pointer < xpoints.length){
+                this.setTranslateX(xpoints[pointer]);
+                this.setTranslateY(ypoints[pointer]);
+                pointer++;
+            }
+                
+                
 	}
+   
+        /*   public void moveX(double x, double xspeed) { //x is horizontal speed
+            for(double i = 0; i < x; i++){
+                this.setTranslateX(this.getTranslateX()+xspeed);
+                this.x += xspeed;
+            }
+        }
+    
+        public void moveY(double y,double yspeed) { //y is vertical speed
+            for(double i = 0; i < y; i++){
+                this.setTranslateY(this.getTranslateY()+yspeed);
+                this.y += yspeed;
+            }
+        }
+        
+        public void calcDistances(Rectangle2D screenSize){
+            double centerx = screenSize.getWidth()/2;
+            double centery = screenSize.getHeight()/2;
+            if(x + 80 <= centerx)
+                xdist = centerx - x + 80;
+            else
+                xdist = x + 80 - centerx;
+            if(y + 80 <= centery)
+                ydist = centery - y + 80;
+            else
+                ydist = y + 80 - centery;
+            if(xdist/ydist == 1){
+                xspeed = 1.0;
+                yspeed = 1.0;
+            }
+            else if(xdist > ydist){
+                xspeed = ydist/xdist;
+                yspeed = xdist/ydist;
+            }
+            else{
+                xspeed = xdist/ydist;
+                yspeed = ydist/xdist;
+            }
+        }*/
+        
+        public void linepoints(Rectangle2D screenSize, int speed){
+            xpoints = new double[speed];
+            ypoints = new double[speed];
+            double centerx = screenSize.getWidth()/2;
+            double centery = screenSize.getHeight()/2;
+            double xinc;
+            double yinc;
+            if(x + 80 <= centerx)
+                xinc = (centerx - x + 80)/speed;
+            else
+                xinc = (x + 80 - centerx)/speed;
+            if(y + 80 <= centery)
+                yinc = (centery - y + 80)/speed;
+            else
+                yinc = (y + 80 - centery)/speed;
+            double tempx = x;
+            double tempy = y;
+            for(int i = 0; i < speed; i++){
+                xpoints[i] = tempx;
+                ypoints[i] = tempy;
+                if(x + 80 <= centerx && y + 80 <= centery){ //quad 2
+                    tempx += xinc;
+                    tempy += yinc;
+                }
+                if(x + 80 > centerx && y + 80 <= centery){ //quad 1
+                    tempx -= xinc;
+                    tempy += yinc;
+                }
+                if(x + 80 <= centerx && y + 80 > centery){ //quad 3
+                    tempx += xinc;
+                    tempy -= yinc;
+                }
+                if(x + 80 > centerx && y + 80 > centery){ //quad 4
+                   tempx -= xinc;
+                   tempy -= yinc;
+                }
+            }
+        }
 
-	public void moveX(double x, double xspeed) { //x is horizontal speed
-		for (double i = 0; i < x; i++) {
-			this.setTranslateX(this.getTranslateX() + xspeed);
-			this.x += xspeed;
-		}
-	}
-
-	public void moveY(double y, double yspeed) { //y is vertical speed
-		for (double i = 0; i < y; i++) {
-			this.setTranslateY(this.getTranslateY() + yspeed);
-			this.y += yspeed;
-		}
-	}
-
-	public void calcDistances(Rectangle2D screenSize) {
-		double centerx = screenSize.getWidth() / 2;
-		double centery = screenSize.getHeight() / 2;
-		if (x + 80 <= centerx) {
-			xdist = centerx - x + 80;
-		} else {
-			xdist = x + 80 - centerx;
-		}
-		if (y + 80 <= centery) {
-			ydist = centery - y + 80;
-		} else {
-			ydist = y + 80 - centery;
-		}
-	}
-
-	public void setAlive(boolean alive) {
+	
+	public void setAlive(boolean alive){
 		this.alive = alive;
 	}
 
