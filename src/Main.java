@@ -56,6 +56,7 @@ public class Main extends Application {
 	static Rectangle healthBarOutline, actualHealth, lostHealth; //for player
 	static Rectangle earthHealthBar, earthActualHealth, earthLostHealth; //for earth
 	Label scoreLabel;
+        Text earthText;
 	VBox health, coinAndScore;
 
 	private List<Projectile> projectiles = new ArrayList();
@@ -189,8 +190,15 @@ public class Main extends Application {
                             if (Math.random() < 0.005) {
 				createAstronaut();
                             }
-                        } else {
+                        } else if (player.getScore() < 100 && player.getScore() >= 50) {
                             if (Math.random() < 0.01) {
+				createDebris();
+                            }
+                            if (Math.random() < 0.005) {
+				createAstronaut();
+                            }
+                        } else {
+                            if (Math.random() < 0.02) {
 				createDebris();
                             }
                             if (Math.random() < 0.01) {
@@ -271,6 +279,7 @@ public class Main extends Application {
 			earthActualHealth = new Rectangle(356, 21, earth.getHealth() * 108, 19);
 			earthActualHealth.setFill(Color.GREEN);
 			gameRoot.getChildren().add(earthActualHealth);
+                        earthText.toFront();
 			debri.setAlive(false);
 		}
 		if (!debri.isAlive()) {
@@ -508,7 +517,12 @@ public class Main extends Application {
             actualHealth.setFill(Color.web("#00F32C"));
             earthActualHealth = new Rectangle(356, 21, 540, 19);
             earthActualHealth.setFill(Color.GREEN);
-            gameRoot.getChildren().addAll(player, earth, health, healthBarOutline, lostHealth,
+            earthText = new Text("EARTH");
+            earthText.setFont(Font.font("Arial", 25));
+            earthText.setTranslateX(590);
+            earthText.setTranslateY(50);
+            earthText.setFill(Color.WHITE);
+            gameRoot.getChildren().addAll(player, earth, health, healthBarOutline, lostHealth, earthText,
                             actualHealth, coinAndScore, earthActualHealth, earthHealthBar, earthLostHealth);
             coinAndScore.toFront();
             scoreLabel.toFront();
@@ -519,6 +533,7 @@ public class Main extends Application {
             earthHealthBar.toFront();
             earthLostHealth.toFront();
             earthActualHealth.toFront();
+            earthText.toFront();
             gameplay = true;
             alreadyStarted = true;
             
