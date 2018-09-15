@@ -34,6 +34,10 @@ public class Player extends Pane {
         }
     }
 
+	public void hit(){
+		health--;
+	}
+	
     public int getX() {
         return x;
     }

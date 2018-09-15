@@ -35,7 +35,11 @@ public class Main extends Application {
 	VBox health, coinAndScore;
 
 	private List<Projectile> projectiles = new ArrayList();
-
+	private List<Projectile> projectilesToRemove = new ArrayList();
+	
+	private List<Debris> debris = new ArrayList();
+	private List<Debris> debrisToRemove = new ArrayList();
+	
 	private final HashMap<KeyCode, Boolean> keys = new HashMap();
 	static Rectangle2D screenSize = Screen.getPrimary().getVisualBounds();
 
@@ -92,6 +96,47 @@ public class Main extends Application {
 		if (isPressed(KeyCode.SPACE)) {
 			shoot();
 		}
+		updateProjectiles();
+		updateDebris();
+		clearLists();
+	}
+	
+	public void updateProjectiles(){
+		for(Projectile projectile:projectiles){
+			for(Debris debris:debris){
+				if(projectile.enemyColliding(debris)){
+					projectile.setAlive(false);
+					debris.setAlive(false);
+					scoreLabel.setText("Score: " + player.getScore());
+				}
+			}
+			if(!projectile.isAlive()){
+				gameRoot.getChildren().remove(projectile);
+				projectilesToRemove.add(projectile);
+			}
+		}
+	}
+	
+	public void updateDebris(){
+		for(Debris debri:debris){
+		//move Debris method
+			if(debri.isColliding(player)){
+				player.hit();
+				playerReceiveHit();
+				debri.setAlive(false);
+			}
+			if(!debri.isAlive()){
+				gameRoot.getChildren().remove(debri);
+				debrisToRemove.add(debri);
+			}
+		}
+	}
+	
+	public void clearLists(){
+		projectiles.remove(projectilesToRemove);
+		debris.remove(debrisToRemove);
+		projectilesToRemove.clear();
+		debrisToRemove.clear();
 	}
 
 	public static void playerReceiveHit() {

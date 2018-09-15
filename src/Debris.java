@@ -64,5 +64,17 @@ public class Debris extends Pane {
 		//Create equation to make 
 
 	}
+	
+	public void setAlive(boolean alive){
+		this.alive = alive;
+	}
+	
+	public boolean isAlive(){
+		return alive;
+	}
+	
+	public boolean isColliding(Player player){
+		return this.getBoundsInParent().intersects(player.getBoundsInParent());
+	}
 
 }
