@@ -14,6 +14,7 @@ public class Player extends Pane {
     int height = 0;
     int screenWidth;
     int screenHeight;
+	int score = 0;
     Point2D velocity;
 
     int x; //Character xPos
@@ -44,13 +45,13 @@ public class Player extends Pane {
 
     public void moveClockwise(boolean dir) {
         if (dir) {
-            this.setTranslateX(((screenWidth/2)-(width/2)) + 100 * (Math.cos((int)this.getRotate() - 5)));
-            this.setTranslateY(((screenHeight/2)-(height/2)) + 100 * (Math.sin((int)this.getRotate() - 5)));
+            this.setTranslateX(((screenWidth/2)-(width/2)) + 100 * (Math.cos((int)this.getRotate() + 5)));
+            this.setTranslateY(((screenHeight/2)-(height/2)) + 100 * (Math.sin((int)this.getRotate() + 5)));
             //System.out.println(("cos" + (100 * Math.cos((int)this.getRotate() - 5))));
             //System.out.println(("sin" + (100 * Math.sin((int)this.getRotate() - 5))));
-            this.setX(((screenWidth/2)-(width/2)) + (int)(100 * Math.cos((int)this.getRotate() - 5)));
-            this.setY(((screenHeight/2)-(height/2)) + (int)(100 * Math.sin((int)this.getRotate() - 5)));
-            //this.setRotate(this.getRotate() - 5);
+            this.setX(((screenWidth/2)-(width/2)) + (int)(100 * Math.cos((int)this.getRotate() + 5)));
+            this.setY(((screenHeight/2)-(height/2)) + (int)(100 * Math.sin((int)this.getRotate() + 5)));
+            this.setRotate(this.getRotate() + 5);
             //setVelocity(new Point2D(Math.cos(Math.toRadians(getRotate())), Math.sin(Math.toRadians(getRotate()))));
         } else {
             //iv.setRotate(iv.getRotate() - 5);
@@ -58,6 +59,10 @@ public class Player extends Pane {
         }
     }
 
+	public void hit(){
+		health--;
+	}
+	
     public int getX() {
         return x;
     }
@@ -73,9 +78,25 @@ public class Player extends Pane {
     public void setY(int y) {
         this.y = y;
     }
-
+	
+	public Point2D getVelocity(){
+		return velocity;
+	}
+	
     public void setVelocity(Point2D velocity) {
         this.velocity = velocity;
     }
+	
+	public int getHealth(){
+		return health;
+	}
+	
+	public void increaseScore(){
+		score++;
+	}
+	
+	public int getScore(){
+		return score;
+	}
 
 }

@@ -63,6 +63,18 @@ public class Debris extends Pane {
     public void move(Character player, double width, double height) { //note width and height here are screen size
             //Create equation to make 
 
-    }
+	}
+	
+	public void setAlive(boolean alive){
+		this.alive = alive;
+	}
+	
+	public boolean isAlive(){
+		return alive;
+	}
+	
+	public boolean isColliding(Player player){
+		return this.getBoundsInParent().intersects(player.getBoundsInParent());
+	}
 
 }
