@@ -1,6 +1,7 @@
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.animation.Animation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -9,6 +10,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 
 public class Earth extends Pane {
 
@@ -32,14 +34,20 @@ public class Earth extends Pane {
         
         public List<Rectangle> collisionRects;
         public Rectangle middle, left, right;
+        
+        SpriteAnimation earth;
+        private final int count = 10;
+        private final int columns = 5;
+        private final Duration duration = Duration.millis(1200);
+        private final Animation animation;
 
 	public Earth(String img, int health, int width, int height, int screenWidth, int screenHeight) {
-		Image earthImage = new Image(img);
-		ImageView earthIV = new ImageView(earthImage);
-		this.iv = earthIV;
-		this.iv.setViewport(new Rectangle2D(offsetX, offsetY, width, height));
 		this.health = health;
 		this.totalHealth = health;
+                earth = new SpriteAnimation(img, count, columns, offsetX, offsetY, width, height, duration); 
+                this.iv = earth.getIV();
+                animation = earth;
+                animation.play();
                 this.getChildren().addAll(iv);
 
 		this.width = width;
