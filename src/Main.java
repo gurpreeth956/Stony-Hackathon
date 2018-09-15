@@ -20,7 +20,7 @@ public class Main extends Application {
         gameArea = new Pane();
         scene = new Scene(gameArea, 200, 200);
         
-        Button bttn = new Button("Start");
+        Button bttn = new Button("Start"); //Button to start game
         bttn.setOnAction(e -> {
             stage.close();
         });
