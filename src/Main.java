@@ -1,9 +1,12 @@
+import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -16,6 +19,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.AudioClip;
+import static javafx.scene.media.AudioClip.INDEFINITE;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -69,6 +76,23 @@ public class Main extends Application {
 		menuRoot = new BorderPane();
 		scene = new Scene(menuRoot, screenSize.getWidth(), screenSize.getHeight());
 		scene.getStylesheets().addAll(this.getClass().getResource("Design.css").toExternalForm());
+                
+                final Task task = new Task() {
+                    @Override
+                    protected Object call() throws Exception {
+                        int s = INDEFINITE;
+                        AudioClip audio = new AudioClip(getClass().getResource("sprites/gamemusic.wav").toExternalForm());
+                        audio.setVolume(0.5f);
+                        audio.setCycleCount(s);
+                        audio.play();
+                        return null;
+                    }
+                };
+                Thread thread = new Thread(task);
+                thread.start();
+                
+                /*AudioClip note = new AudioClip(this.getClass().getResource("sprites/gamemusic.wav").toString());
+                note.play();*/
 
 		createGameRoot();
 		createGameOverRoot();
@@ -220,7 +244,7 @@ public class Main extends Application {
 		}
 
 		Astronaut astronaut = new Astronaut("file:src/sprites/Astronaut.png", randX, randY, 3, 1, 50, 50, screenSize);
-		gameRoot.getChildren().add(astronaut);
+		gameRoot.getChildren().addAll(astronaut, astronaut.middle);
 		astronauts.add(astronaut);
 	}
 
@@ -238,6 +262,8 @@ public class Main extends Application {
 		if (!astro.isAlive()) {
 			gameRoot.getChildren().remove(astro);
 			astronautsToRemove.add(astro);
+                        astro.updateHit();
+                        astro.middle.toFront();
 		}
 	}
 
