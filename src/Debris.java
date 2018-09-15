@@ -31,9 +31,6 @@ public class Debris extends Pane {
     public int health;
     public int totalHealth;
     
-    public List<Rectangle> collisionRects;
-    public boolean hasCollisionRects = false;
-    
     //currently used only for bosses
     public Label nameLabel;
 
@@ -58,9 +55,6 @@ public class Debris extends Pane {
 	actualHealth = new Rectangle(x, y - 5, width, 3);
 	actualHealth.setFill(Color.GREEN);
 	actualHealth.toFront();
-        
-        //so game does not crash
-        collisionRects = new ArrayList();
     }
     
     public void setCharacterView(int offsetX, int offsetY) {
