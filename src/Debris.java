@@ -8,6 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 
 public class Debris extends Pane {
 
@@ -135,13 +136,13 @@ public class Debris extends Pane {
 	}
 
 	public boolean isEarthColliding(Earth earth) {
-            boolean colliding = false;
-            for (Rectangle rect : earth.collisionRects) {
-		if (this.getBoundsInParent().intersects(rect.getBoundsInParent())) {
-                    colliding = true;
-                }
-            }
-            return colliding;
+		boolean colliding = false;
+		for (Rectangle rect : earth.collisionRects) {
+			if (this.getBoundsInParent().intersects(rect.getBoundsInParent())) {
+				colliding = true;
+			}
+		}
+		return colliding;
 	}
 
     public double getX() {

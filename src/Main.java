@@ -15,6 +15,8 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
@@ -539,81 +541,6 @@ public class Main extends Application {
             gameRoot.getChildren().addAll(earth.middle);
             
     }
-   
-    public void createHowRoot() {
-            howRoot = new BorderPane();
-            Text howText = new Text("Use arrow keys to move shuttle and space bar to shoot. Destroy the asteroids and save the astronauts.");
-            howText.setFill(Color.WHITE);
-            howText.setFont(Font.font("Arial", 20));
-            howRoot.setCenter(howText);
-            BorderPane.setAlignment(howText, Pos.CENTER);
-            BorderPane.setMargin(howText, new Insets(10));
-            Button backBtn = new Button("BACK TO MENU");
-            backBtn.setOnAction(e -> {
-                    stage.getScene().setRoot(menuRoot);
-                    BorderPane.setAlignment(menuBox, Pos.CENTER);
-            });
-            howRoot.setBottom(backBtn);
-            howRoot.setId("menu");
-            BorderPane.setAlignment(backBtn, Pos.BOTTOM_CENTER);
-            BorderPane.setMargin(backBtn, new Insets(50));
-            
-    }
-    
-    public void createPauseRoot() {
-        pauseRoot = new BorderPane();
-        VBox vbox = new VBox();
-            vbox.setPadding(new Insets(20));
-            vbox.setSpacing(10);
-
-            Button exitBtn = new Button("QUIT");
-            exitBtn.setOnAction(e -> {
-                    stage.getScene().setRoot(exitRoot);
-
-                    yesExit.setOnAction(eY -> {
-                            Platform.exit();
-                            gameplay = false;
-                            clearAll();
-                    });
-                    noExit.setOnAction(eN -> {
-                            stage.getScene().setRoot(gameOverRoot);
-                    });
-            });
-
-            Button newBtn = new Button("NEW GAME");
-            newBtn.setOnAction(e -> {
-                    stage.getScene().setRoot(gameRoot);
-                    clearAll();
-                    newGame();
-            });
-
-            Button backToMenu = new Button("BACK TO MENU");
-            backToMenu.setOnAction(e -> {
-                    stage.getScene().setRoot(menuRoot);
-                    gameplay = false;
-                    clearAll();
-                    newGame();
-            });
-            
-            Button resume = new Button("RESUME");
-            resume.setOnAction(e -> {
-                stage.getScene().setRoot(gameRoot);
-                gameplay = true;
-            });
-
-            vbox.getChildren().addAll(resume, backToMenu, newBtn, exitBtn);
-            
-            Text title = new Text("PAUSE MENU");
-            title.setFill(Color.WHITE);
-		title.setFont(Font.font("Arial", 50));
-                
-            pauseRoot.setTop(title);
-            pauseRoot.setCenter(vbox);
-            pauseRoot.setId("menu");
-            BorderPane.setAlignment(vbox, Pos.TOP_CENTER);
-            BorderPane.setAlignment(title, Pos.TOP_CENTER);
-            BorderPane.setMargin(title, new Insets(100));
-    }
 
 	public void createScoreRoot() throws FileNotFoundException {
 		/*scoreRoot = new BorderPane();
@@ -641,7 +568,112 @@ public class Main extends Application {
 		BorderPane.setAlignment(backBtn, Pos.BOTTOM_CENTER);*/
 	}
         
+	public void createHowRoot() {
+		Text title = new Text("How To Play");
+		title.setFont(Font.font("Arial", 40));
+		BorderPane.setAlignment(title, Pos.TOP_CENTER);
+		howRoot = new BorderPane();
+		VBox howBox = createHowBox();
+		howBox.setAlignment(Pos.CENTER);
+		howRoot.setCenter(howBox);
+		howRoot.setTop(title);
+		BorderPane.setAlignment(howBox,Pos.CENTER);
+		Button backBtn = new Button("BACK TO MENU");
+		backBtn.setOnAction(e -> {
+			stage.getScene().setRoot(menuRoot);
+			BorderPane.setAlignment(menuBox, Pos.CENTER);
+		});
+		howRoot.setBottom(backBtn);
+		BorderPane.setAlignment(backBtn, Pos.BOTTOM_CENTER);
+		BorderPane.setMargin(backBtn, new Insets(50));
+	}
 	
+	public VBox createHowBox(){
+		VBox controls = new VBox();
+		Image arrowImage = new Image("file:src/sprites/ArrowKeys.png");
+		ImageView arrowIV = new ImageView(arrowImage);
+		Text arrowText = new Text("Use the arrowkeys to move the player");
+		arrowText.setFont(Font.font("Arial", 20));
+		HBox arrowBox = new HBox(arrowIV, arrowText);
+		arrowBox.setAlignment(Pos.CENTER);
+		Image barImage = new Image("file:src/sprites/SpaceBar.png");
+		ImageView barIV = new ImageView(barImage);
+		Text barText = new Text("Use the spacebar to shoot");
+		barText.setFont(Font.font("Arial", 20));
+		HBox barBox = new HBox(barIV, barText);
+		barBox.setAlignment(Pos.CENTER);
+		Image asteroidImage = new Image("file:src/sprites/ControlAsteroid.png");
+		ImageView asteroidIV = new ImageView(asteroidImage);
+		Text asteroidText = new Text("\n\nHit the asteroids before they reach the Earth");
+		asteroidText.setFont(Font.font("Arial", 20));
+		HBox asteroidBox = new HBox(asteroidIV, asteroidText);
+		asteroidBox.setAlignment(Pos.CENTER);
+		Image astroImage = new Image("file:src/sprites/ControlAstronaut.png");
+		ImageView astroIV = new ImageView(astroImage);
+		Text astroText = new Text("\n\nSave the astronauts by catching them");
+		astroText.setFont(Font.font("Arial", 20));
+		HBox astroBox = new HBox(astroIV, astroText);
+		astroBox.setAlignment(Pos.CENTER);
+		controls.getChildren().addAll(arrowBox, barBox, asteroidBox, astroBox);
+		controls.setAlignment(Pos.CENTER);
+		BorderPane.setAlignment(controls, Pos.CENTER);
+		return controls;
+	}
+
+	public void createPauseRoot() {
+		pauseRoot = new BorderPane();
+		VBox vbox = new VBox();
+		vbox.setPadding(new Insets(20));
+		vbox.setSpacing(10);
+
+		Button exitBtn = new Button("QUIT");
+		exitBtn.setOnAction(e -> {
+			stage.getScene().setRoot(exitRoot);
+
+			yesExit.setOnAction(eY -> {
+				Platform.exit();
+				gameplay = false;
+				clearAll();
+			});
+			noExit.setOnAction(eN -> {
+				stage.getScene().setRoot(gameOverRoot);
+			});
+		});
+
+		Button newBtn = new Button("NEW GAME");
+		newBtn.setOnAction(e -> {
+			stage.getScene().setRoot(gameRoot);
+			clearAll();
+			newGame();
+		});
+
+		Button backToMenu = new Button("BACK TO MENU");
+		backToMenu.setOnAction(e -> {
+			stage.getScene().setRoot(menuRoot);
+			gameplay = false;
+			clearAll();
+			newGame();
+		});
+
+		Button resume = new Button("RESUME");
+		resume.setOnAction(e -> {
+			stage.getScene().setRoot(gameRoot);
+			gameplay = true;
+		});
+
+		vbox.getChildren().addAll(resume, backToMenu, newBtn, exitBtn);
+
+		Text title = new Text("PAUSE MENU");
+		title.setFont(Font.font("Arial", 50));
+
+		vbox.setAlignment(Pos.CENTER);
+		pauseRoot.setTop(title);
+		pauseRoot.setCenter(vbox);
+		BorderPane.setAlignment(vbox, Pos.TOP_CENTER);
+
+		BorderPane.setAlignment(title, Pos.TOP_CENTER);
+		BorderPane.setMargin(title, new Insets(100));
+	}
 
 	public void clearAll() {
 		projectiles.clear();
