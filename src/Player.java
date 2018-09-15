@@ -10,6 +10,7 @@ public class Player extends Pane {
     int offsetY = 0;
     int width = 0;
     int height = 0;
+	int score = 0;
     Point2D velocity;
 
     int x; //Character xPos
@@ -33,6 +34,10 @@ public class Player extends Pane {
         }
     }
 
+	public void hit(){
+		health--;
+	}
+	
     public int getX() {
         return x;
     }
@@ -48,9 +53,25 @@ public class Player extends Pane {
     public void setY(int y) {
         this.y = y;
     }
-
+	
+	public Point2D getVelocity(){
+		return velocity;
+	}
+	
     public void setVelocity(Point2D velocity) {
         this.velocity = velocity;
     }
+	
+	public int getHealth(){
+		return health;
+	}
+	
+	public void increaseScore(){
+		score++;
+	}
+	
+	public int getScore(){
+		return score;
+	}
 
 }
