@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.List;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.event.EventType;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -95,9 +96,38 @@ public class Main extends Application {
             if (isPressed(KeyCode.SPACE)) {
                     shoot();
             }
+            if(Math.random() < 0.01)
+                createDebris();
             updateProjectiles();
             updateDebris();
             clearLists();
+    }
+    
+    
+    public void createDebris(){
+        double randX = 0;
+        double randY = 0;
+        int scenerios = (int)(Math.random()*4);
+        if(scenerios == 0){
+            randX = -160;
+            randY = (Math.random() * (screenSize.getHeight() + 160) - 160);
+        }
+        if(scenerios == 1){
+            randX = screenSize.getWidth();
+            randY = (Math.random() * (screenSize.getHeight() + 160) - 160);
+        }
+        if(scenerios == 2){
+            randY = -160;
+            randX = (Math.random() * (screenSize.getWidth() + 160) - 160);
+        }
+        if(scenerios == 3){
+            randY = screenSize.getHeight();
+            randX = (Math.random() * (screenSize.getWidth() + 160) - 160);
+        }
+
+        Debris newdebris = new Debris("file:src/sprites/rocket.png", randX, randY, 3, 1, 50,50, screenSize);
+        gameRoot.getChildren().add(newdebris);
+        debris.add(newdebris);
     }
 
     public void updateProjectiles(){
@@ -119,11 +149,15 @@ public class Main extends Application {
 
     public void updateDebris(){
             for(Debris debri:debris){
-            //move Debris method
+                debri.move(screenSize);
                     if(debri.isColliding(player)){
                             player.hit();
                             playerReceiveHit();
                             debri.setAlive(false);
+                    }
+                    if(debri.isEarthColliding(earth)){
+                        earth.hit();
+                        debri.setAlive(false);
                     }
                     if(!debri.isAlive()){
                             gameRoot.getChildren().remove(debri);

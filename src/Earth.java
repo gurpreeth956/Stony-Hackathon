@@ -47,4 +47,8 @@ public class Earth extends Pane {
 	this.x = (screenWidth/2)-(width/2);
         this.y = (screenHeight/2)-(height/2);
     }
+    
+    public void hit(){
+        health--;
+    }
 }
