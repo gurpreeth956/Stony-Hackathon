@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +30,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import jdk.nashorn.internal.parser.Scanner;
 
 public class Main extends Application {
 
@@ -155,7 +157,7 @@ public class Main extends Application {
 		stage.setResizable(false);
 		stage.show();
 	}
-	}
+	
 
 	public void update(Stage stage) {
 		if (gameplay) {
@@ -217,7 +219,7 @@ public class Main extends Application {
 			randX = (Math.random() * (screenSize.getWidth() + 160) - 160);
 		}
 
-		Debris newdebris = new Debris("file:src/sprites/rocket.png", randX, randY, 3, 1, 50, 50, screenSize);
+		Debris newdebris = new Debris("file:src/sprites/Asteroid.png", randX, randY, 3, 1, 50, 50, screenSize);
 		gameRoot.getChildren().add(newdebris);
 		debris.add(newdebris);
 	}
@@ -454,7 +456,7 @@ public class Main extends Application {
 	}
     public void newGame() {
             player = new Player("file:src/sprites/player.png", 5, 25, 25, (int) screenSize.getWidth(), (int) screenSize.getHeight());
-            earth = new Earth("file:src/sprites/EarthM.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+            earth = new Earth("file:src/sprites/Earth.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
             gameRoot.setId("backgroundgame");
             actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
             actualHealth.setFill(Color.web("#00F32C"));
@@ -477,42 +479,6 @@ public class Main extends Application {
             gameRoot.getChildren().addAll(earth.middle, earth.left, earth.right);
             
     }
-	public void createGameRoot() {
-		gameRoot = new Pane();
-		gameRoot.setId("backgroundgame");
-		Label healthLabel = new Label("Health: ");
-		healthLabel.setFont(new Font("Arial", 20));
-		healthLabel.setTextFill(Color.WHITE);
-		healthLabel.toFront();
-		healthBarOutline = new Rectangle(screenSize.getWidth() - 121, 9, 102, 22);
-		healthBarOutline.setFill(Color.TRANSPARENT);
-		healthBarOutline.setStroke(Color.BLACK);
-		lostHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
-		lostHealth.setFill(Color.RED);
-		actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
-		actualHealth.setFill(Color.web("#00F32C"));
-		health = new VBox(10);
-		health.getChildren().addAll(healthLabel);
-		health.setTranslateX(screenSize.getWidth() - 200);
-		health.setTranslateY(10);
-		scoreLabel = new Label("Score: ");
-		scoreLabel.setFont(new Font("Arial", 20));
-		scoreLabel.setTextFill(Color.WHITE);
-		coinAndScore = new VBox(10);
-		coinAndScore.getChildren().addAll(scoreLabel);
-		coinAndScore.setTranslateX(10);
-		coinAndScore.setTranslateY(10);
-		coinAndScore.toBack();
-
-		//For earth stuff
-		earthHealthBar = new Rectangle(355, 20, 541, 20);
-		earthHealthBar.setFill(Color.TRANSPARENT);
-		earthHealthBar.setStroke(Color.BLACK);
-		earthLostHealth = new Rectangle(356, 21, 540, 19);
-		earthLostHealth.setFill(Color.RED);
-		earthActualHealth = new Rectangle(356, 21, 540, 19);
-		earthActualHealth.setFill(Color.GREEN);
-	}
 
 	public void createHowRoot() {
 		howRoot = new BorderPane();
@@ -531,7 +497,7 @@ public class Main extends Application {
 	}
 
 	public void createScoreRoot() throws FileNotFoundException {
-		scoreRoot = new BorderPane();
+		/*scoreRoot = new BorderPane();
 		Text scoreTitle = new Text("High Scores");
 		File file = new File("C:\\Users\\rhuan\\OneDrive\\Documents\\GitHub\\Stony-Hackathon\\src\\HighScores.txt");
 		Scanner scan = new Scanner(file);
@@ -553,88 +519,6 @@ public class Main extends Application {
 			BorderPane.setAlignment(menuBox, Pos.CENTER);
 		});
 		scoreRoot.setBottom(backBtn);
-		BorderPane.setAlignment(backBtn, Pos.BOTTOM_CENTER);
-	}
-
-	public void createGameOverRoot() {
-		VBox gameOverBox = addGameOverButtons(stage);
-		gameOverBox.setAlignment(Pos.TOP_CENTER);
-		gameOverRoot = new BorderPane();
-		gameOverRoot.setId("menu");
-		gameOverRoot.setCenter(gameOverBox);
-		exitRoot = new VBox(20);
-		Label exitString = new Label("Are you sure you want to exit?");
-		exitString.setFont(Font.font("Arial", 25));
-		HBox exitButtons = new HBox(10);
-		exitButtons.getChildren().addAll(yesExit, noExit);
-		exitButtons.setAlignment(Pos.CENTER);
-		exitRoot.getChildren().addAll(exitString, exitButtons);
-		exitRoot.setId("menu");
-		exitRoot.setAlignment(Pos.CENTER);
-	}
-
-	public VBox addGameOverButtons(Stage stage) {
-		VBox vbox = new VBox();
-		vbox.setPadding(new Insets(20));
-		vbox.setSpacing(10);
-
-		Button exitBtn = new Button("QUIT");
-		exitBtn.setOnAction(e -> {
-			stage.getScene().setRoot(exitRoot);
-
-			yesExit.setOnAction(eY -> {
-				Platform.exit();
-				gameplay = false;
-				clearAll();
-			});
-			noExit.setOnAction(eN -> {
-				stage.getScene().setRoot(gameOverRoot);
-			});
-		});
-
-		Button newBtn = new Button("NEW GAME");
-		newBtn.setOnAction(e -> {
-			stage.getScene().setRoot(gameRoot);
-			clearAll();
-			newGame();
-		});
-
-		vbox.getChildren().addAll(exitBtn, newBtn);
-		return vbox;
-	}
-
-	public void clearAll() {
-		projectiles.clear();
-		projectilesToRemove.clear();
-		debrisToRemove.clear();
-		debris.clear();
-		scoreLabel.setText("Score: ");
-		gameRoot.getChildren().clear();
-	}
-
-	public void newGame() {
-		player = new Player("file:src/sprites/player.png", 5, 25, 25, (int) screenSize.getWidth(), (int) screenSize.getHeight());
-		earth = new Earth("file:src/sprites/EarthM.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
-		gameRoot.setId("backgroundgame");
-		actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
-		actualHealth.setFill(Color.web("#00F32C"));
-		earthActualHealth = new Rectangle(356, 21, 540, 19);
-		earthActualHealth.setFill(Color.GREEN);
-		gameRoot.getChildren().addAll(player, earth, health, healthBarOutline, lostHealth,
-				actualHealth, coinAndScore, earthActualHealth, earthHealthBar, earthLostHealth);
-		coinAndScore.toFront();
-		scoreLabel.toFront();
-		health.toFront();
-		healthBarOutline.toFront();
-		lostHealth.toFront();
-		actualHealth.toFront();
-		earthHealthBar.toFront();
-		earthLostHealth.toFront();
-		earthActualHealth.toFront();
-		gameplay = true;
-
-		//Collision rectangle additions
-		gameRoot.getChildren().addAll(earth.middle, earth.left, earth.right);
-
+		BorderPane.setAlignment(backBtn, Pos.BOTTOM_CENTER);*/
 	}
 }
