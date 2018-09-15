@@ -185,18 +185,18 @@ public class Debris extends Pane {
 	public void setAlive(boolean alive){
 		this.alive = alive;
 	}
-	
-	public boolean isAlive(){
+
+	public boolean isAlive() {
 		return alive;
 	}
-	
-	public boolean isColliding(Player player){
-            return this.getBoundsInParent().intersects(player.getBoundsInParent());
-	}
-        
-        public boolean isEarthColliding(Earth earth){
-           return this.getBoundsInParent().intersects(earth.getBoundsInParent());
 
-        }
+	public boolean isColliding(Player player) {
+		return this.getBoundsInParent().intersects(player.getBoundsInParent());
+	}
+
+	public boolean isEarthColliding(Earth earth) {
+		return this.getBoundsInParent().intersects(earth.getBoundsInParent());
+
+	}
 
 }
