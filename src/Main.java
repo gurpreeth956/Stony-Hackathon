@@ -126,7 +126,7 @@ public class Main extends Application {
 		timer.start();
 
 		//gameRoot.getChildren().addAll(player);
-		stage.setTitle("The Elimination of Space Pollution");
+		stage.setTitle("THE AWESOME SPACE GAME");
 		stage.setScene(scene);
 		stage.setFullScreen(true);
 		stage.setFullScreenExitHint("");
@@ -376,7 +376,7 @@ public class Main extends Application {
 
 	public void createHowRoot() {
 		howRoot = new BorderPane();
-		Text howText = new Text("Use arrow keys to move shuttle and space bar to shoot. Destroy the asteroids and save the astronauts.");
+		Text howText = new Text("Use arrow keys to move shuttle and space bar to shoot. \n Destroy the asteroids and save the astronauts.");
 		howText.setFont(Font.font("Arial", 20));
 		howRoot.setCenter(howText);
 		BorderPane.setAlignment(howText, Pos.CENTER);
