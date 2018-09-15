@@ -1,9 +1,8 @@
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javafx.animation.AnimationTimer;
-import javafx.application.Application;
+import javafx.application.Application;;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -22,86 +21,138 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
-	Stage stage;
-	Scene scene;
-	static Pane gameRoot;
-	static BorderPane menuRoot;
+    Stage stage;
+    Scene scene;
+    static Pane gameRoot;
+    static BorderPane menuRoot;
 
-	static Player player;
-	Earth earth;
+    static Player player;
+    Earth earth;
+    
+    private long timeOfLastProjectile = 0;
 
-	private long timeOfLastProjectile = 0;
+    static Rectangle healthBarOutline, actualHealth, lostHealth;
+    Label scoreLabel;
+    VBox health, coinAndScore;
 
-	static Rectangle healthBarOutline, actualHealth, lostHealth;
-	Label scoreLabel;
-	VBox health, coinAndScore;
+    private List<Projectile> projectiles = new ArrayList();
+    private List<Projectile> projectilesToRemove = new ArrayList();
 
-	private List<Projectile> projectiles = new ArrayList();
-	private List<Projectile> projectilesToRemove = new ArrayList();
+    private List<Debris> debris = new ArrayList();
+    private List<Debris> debrisToRemove = new ArrayList();
 
-	private List<Debris> debris = new ArrayList();
-	private List<Debris> debrisToRemove = new ArrayList();
+    private final HashMap<KeyCode, Boolean> keys = new HashMap();
+    static Rectangle2D screenSize = Screen.getPrimary().getVisualBounds();
 
-	private final HashMap<KeyCode, Boolean> keys = new HashMap();
-	static Rectangle2D screenSize = Screen.getPrimary().getVisualBounds();
+    public static void main(String[] args) {
+            launch(args);
+    }
 
-	public static void main(String[] args) {
-		launch(args);
-	}
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+            stage = primaryStage;
+            menuRoot = new BorderPane();
+            scene = new Scene(menuRoot, screenSize.getWidth(), screenSize.getHeight());
+            scene.getStylesheets().addAll(this.getClass().getResource("Design.css").toExternalForm());
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		stage = primaryStage;
-		menuRoot = new BorderPane();
-		scene = new Scene(menuRoot, screenSize.getWidth(), screenSize.getHeight());
-		scene.getStylesheets().addAll(this.getClass().getResource("Design.css").toExternalForm());
+            createGameRoot();
+            scene.setOnKeyPressed(e -> keys.put(e.getCode(), true));
+            scene.setOnKeyReleased(e -> keys.put(e.getCode(), false));
 
-		createGameRoot();
-		scene.setOnKeyPressed(e -> keys.put(e.getCode(), true));
-		scene.setOnKeyReleased(e -> keys.put(e.getCode(), false));
+            Button bttn = new Button("Start");
+            bttn.setOnAction(e -> {
+                    stage.getScene().setRoot(gameRoot);
+                    newGame();
+            });
 
-		Button bttn = new Button("Start");
-		bttn.setOnAction(e -> {
-			stage.getScene().setRoot(gameRoot);
-			newGame();
-		});
+            AnimationTimer timer = new AnimationTimer() {
+                    @Override
+                    public void handle(long now) {
+                            update(stage);
+                    }
+            };
+            timer.start();
 
-		AnimationTimer timer = new AnimationTimer() {
-			@Override
-			public void handle(long now) {
-				update(stage);
-			}
-		};
-		timer.start();
+            //adding to roots
+            menuRoot.setCenter(bttn);
 
-		//adding to roots
-		menuRoot.setCenter(bttn);
+            //gameRoot.getChildren().addAll(player);
+            stage.setTitle("The Elimination of Space Pollution");
+            stage.setScene(scene);
+            stage.setFullScreen(true);
+            stage.setFullScreenExitHint("");
+            stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+            stage.resizableProperty().setValue(Boolean.FALSE);
+            stage.setResizable(false);
+            stage.show();
+    }
 
-		//gameRoot.getChildren().addAll(player);
-		stage.setTitle("The Elimination of Space Pollution");
-		stage.setScene(scene);
-		stage.setFullScreen(true);
-		stage.setFullScreenExitHint("");
-		stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
-		stage.resizableProperty().setValue(Boolean.FALSE);
-		stage.setResizable(false);
-		stage.show();
-	}
+    public void update(Stage stage) {
+            if (isPressed(KeyCode.RIGHT)) {
+                    player.moveClockwise(true, 25);
+            }
+            if (isPressed(KeyCode.LEFT)) {
+                    player.moveClockwise(false, 25);
+            }
+            if (isPressed(KeyCode.SPACE)) {
+                    shoot();
+            }
+            if(Math.random() < 0.01)
+                createDebris();
+            updateProjectiles();
+            updateDebris();
+            clearLists();
+    }
+    
+    
+    public void createDebris(){
+        double randX = 0;
+        double randY = 0;
+        int scenerios = (int)(Math.random()*4);
+        if(scenerios == 0){
+            randX = -160;
+            randY = (Math.random() * (screenSize.getHeight() + 160) - 160);
+        }
+        if(scenerios == 1){
+            randX = screenSize.getWidth();
+            randY = (Math.random() * (screenSize.getHeight() + 160) - 160);
+        }
+        if(scenerios == 2){
+            randY = -160;
+            randX = (Math.random() * (screenSize.getWidth() + 160) - 160);
+        }
+        if(scenerios == 3){
+            randY = screenSize.getHeight();
+            randX = (Math.random() * (screenSize.getWidth() + 160) - 160);
+        }
 
-	public void update(Stage stage) {
-		if (isPressed(KeyCode.RIGHT)) {
-			player.moveClockwise(true);
-		}
-		if (isPressed(KeyCode.LEFT)) {
-			player.moveClockwise(true);
-		}
-		if (isPressed(KeyCode.SPACE)) {
-			shoot();
-		}
-		updateProjectiles();
-		updateDebris();
-		clearLists();
-	}
+        Debris newdebris = new Debris("file:src/sprites/rocket.png", randX, randY, 3, 1, 50,50, screenSize);
+        gameRoot.getChildren().add(newdebris);
+        debris.add(newdebris);
+    }
+
+    public void updateDebris(){
+            for(Debris debri:debris){
+                debri.move(screenSize);
+                    if(debri.isColliding(player)){
+                            player.hit();
+                            playerReceiveHit();
+                            debri.setAlive(false);
+                    }
+                    if(debri.isEarthColliding(earth)){
+                        earth.hit();
+                        debri.setAlive(false);
+                    }
+                    if(!debri.isAlive()){
+                            gameRoot.getChildren().remove(debri);
+                            debrisToRemove.add(debri);
+                    }
+            }
+    }
+
+    public boolean isPressed(KeyCode key) {
+            return keys.getOrDefault(key, false);
+    }
 
 	public void updateProjectiles() {
 		for (Projectile projectile : projectiles) {
@@ -122,21 +173,6 @@ public class Main extends Application {
 			if (!projectile.isAlive()) {
 				gameRoot.getChildren().remove(projectile);
 				projectilesToRemove.add(projectile);
-			}
-		}
-	}
-
-	public void updateDebris() {
-		for (Debris debri : debris) {
-			//move Debris method
-			if (debri.isColliding(player)) {
-				player.hit();
-				playerReceiveHit();
-				debri.setAlive(false);
-			}
-			if (!debri.isAlive()) {
-				gameRoot.getChildren().remove(debri);
-				debrisToRemove.add(debri);
 			}
 		}
 	}
@@ -163,7 +199,6 @@ public class Main extends Application {
 		long time = timeNow - timeOfLastProjectile;
 		if (time < 0 || time > 500) {
 			Projectile projectile = new Projectile("file:src/sprites/HomingShot.png", player.getX(), player.getY(), 24, 10);
-			projectile.toBack();
 			projectile.setVelocityX(5);
 			projectile.setVelocityY(5);//player.getVelocity().normalize().multiply(5));
 			//projectile.setTranslateX(player.getTranslateX());
@@ -172,10 +207,6 @@ public class Main extends Application {
 			gameRoot.getChildren().add(projectile);
 			timeOfLastProjectile = timeNow;
 		}
-	}
-
-	public boolean isPressed(KeyCode key) {
-		return keys.getOrDefault(key, false);
 	}
 
 	public void createGameRoot() {

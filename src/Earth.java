@@ -44,8 +44,12 @@ public class Earth extends Pane {
 	public void setPosition() {
 		this.setTranslateX((screenWidth / 2) - (width / 2));
 		this.setTranslateY((screenHeight / 2) - (height / 2));
-		this.x = (screenWidth / 2) ;
-		this.y = (screenHeight / 2) ;
+		this.x = (screenWidth / 2);
+		this.y = (screenHeight / 2);
+	}
+
+	public void hit() {
+		health--;
 	}
 
 	public int getX() {
