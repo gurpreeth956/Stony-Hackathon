@@ -31,6 +31,7 @@ public class Main extends Application {
     Earth earth;
     
     private long timeOfLastProjectile = 0;
+    private boolean gameplay = false;
 
     static Rectangle healthBarOutline, actualHealth, lostHealth;
     Label scoreLabel;
@@ -89,6 +90,7 @@ public class Main extends Application {
     }
 
     public void update(Stage stage) {
+        if (gameplay) {
             if (isPressed(KeyCode.RIGHT)) {
                     player.moveClockwise(true, 25);
             }
@@ -103,8 +105,8 @@ public class Main extends Application {
             updateProjectiles();
             updateDebris();
             clearLists();
+        }
     }
-    
     
     public void createDebris(){
         double randX = 0;
@@ -246,6 +248,7 @@ public class Main extends Application {
 		actualHealth.setFill(Color.web("#00F32C"));
 		gameRoot.getChildren().addAll(player, health, healthBarOutline, lostHealth,
 				actualHealth, coinAndScore);
+                gameplay = true;
 		coinAndScore.toFront();
 		scoreLabel.toFront();
 		health.toFront();

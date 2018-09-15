@@ -63,8 +63,8 @@ public class Projectile extends Pane {
 			}
 		}
 
-		this.setTranslateX(this.getTranslateX() + (int) vx);
-		this.setTranslateY(this.getTranslateY() + (int) vy);
+		this.setTranslateX(this.getTranslateX() + vx);
+		this.setTranslateY(this.getTranslateY() + vy);
 		this.x += (int) vx; //X is int and vx is double 
 		this.y += (int) vy; //casting to int improves missile accuracy
 	}

@@ -9,7 +9,7 @@ public class Player extends Pane {
 
     ImageView iv;
     int offsetX = 0;
-    int offsetY = 17;
+    int offsetY = 0;
     int width = 0;
     int height = 0;
     int screenWidth;
@@ -37,10 +37,10 @@ public class Player extends Pane {
     }
     
     public void setPosition(){
-        this.setTranslateX((screenWidth/2)-(width/2) + 100);
-        this.setTranslateY((screenHeight/2)-(height/2));
-	this.x = (screenWidth/2)-(width/2 + 100);
-        this.y = (screenHeight/2)-(height/2);
+        this.setTranslateX((screenWidth/2)-(width/2));
+        this.setTranslateY((screenHeight/2)-(height/2) + 100);
+	this.x = (screenWidth/2)-(width/2);
+        this.y = (screenHeight/2)-(height/2) + 100;
     }
 
     long timeOfLastMove = 0;
