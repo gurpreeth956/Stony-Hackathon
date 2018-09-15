@@ -29,6 +29,8 @@ public class Main extends Application {
 
     static Player player;
     Earth earth;
+    
+    private long timeOfLastProjectile = 0;
 
     static Rectangle healthBarOutline, actualHealth, lostHealth;
     Label scoreLabel;
@@ -88,10 +90,10 @@ public class Main extends Application {
 
     public void update(Stage stage) {
             if (isPressed(KeyCode.RIGHT)) {
-                    player.moveClockwise(true);
+                    player.moveClockwise(true, 25);
             }
             if (isPressed(KeyCode.LEFT)) {
-                    player.moveClockwise(true);
+                    player.moveClockwise(false, 25);
             }
             if (isPressed(KeyCode.SPACE)) {
                     shoot();

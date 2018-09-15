@@ -43,7 +43,7 @@ public class Player extends Pane {
         this.y = (screenHeight/2)-(height/2);
     }
 
-    long timeOfLastMove;
+    long timeOfLastMove = 0;
     
     public void moveClockwise(boolean dir, int angleChange) {
         long timeNow = System.currentTimeMillis();
