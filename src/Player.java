@@ -9,7 +9,7 @@ public class Player extends Pane {
 
     ImageView iv;
     int offsetX = 0;
-    int offsetY = 0;
+    int offsetY = 17;
     int width = 0;
     int height = 0;
     int screenWidth;
@@ -37,25 +37,38 @@ public class Player extends Pane {
     }
     
     public void setPosition(){
-        this.setTranslateX((screenWidth/2)-(width/2));
-        this.setTranslateY((screenHeight/2)-(height/2) + 100);
-	this.x = (screenWidth/2)-(width/2);
-        this.y = (screenHeight/2)-(height/2) + 100;
+        this.setTranslateX((screenWidth/2)-(width/2) + 100);
+        this.setTranslateY((screenHeight/2)-(height/2));
+	this.x = (screenWidth/2)-(width/2 + 100);
+        this.y = (screenHeight/2)-(height/2);
     }
 
-    public void moveClockwise(boolean dir) {
-        if (dir) {
-            this.setTranslateX(((screenWidth/2)-(width/2)) + 100 * (Math.cos((int)this.getRotate() + 5)));
-            this.setTranslateY(((screenHeight/2)-(height/2)) + 100 * (Math.sin((int)this.getRotate() + 5)));
-            //System.out.println(("cos" + (100 * Math.cos((int)this.getRotate() - 5))));
-            //System.out.println(("sin" + (100 * Math.sin((int)this.getRotate() - 5))));
-            this.setX(((screenWidth/2)-(width/2)) + (int)(100 * Math.cos((int)this.getRotate() + 5)));
-            this.setY(((screenHeight/2)-(height/2)) + (int)(100 * Math.sin((int)this.getRotate() + 5)));
-            this.setRotate(this.getRotate() + 5);
-            //setVelocity(new Point2D(Math.cos(Math.toRadians(getRotate())), Math.sin(Math.toRadians(getRotate()))));
-        } else {
-            //iv.setRotate(iv.getRotate() - 5);
-            //setVelocity(new Point2D(Math.cos(Math.toRadians(getRotate())), Math.sin(Math.toRadians(getRotate()))));
+    long timeOfLastMove;
+    
+    public void moveClockwise(boolean dir, int angleChange) {
+        long timeNow = System.currentTimeMillis();
+        long time = timeNow - timeOfLastMove;
+        
+        if (time < 0 || time > 25) {
+            if (dir) {
+                this.setTranslateX(((screenWidth/2)-(width/2)) + 100 * (Math.cos(this.getRotate() - angleChange)));
+                this.setTranslateY(((screenHeight/2)-(height/2)) + 100 * (Math.sin(this.getRotate() - angleChange)));
+                //System.out.println(("cos" + (100 * Math.cos((int)this.getRotate() - 5))));
+                //System.out.println(("sin" + (100 * Math.sin((int)this.getRotate() - 5))));
+                this.setX(((screenWidth/2)-(width/2)) + (int)(100 * Math.cos(this.getRotate() - angleChange)));
+                this.setY(((screenHeight/2)-(height/2)) + (int)(100 * Math.sin(this.getRotate() - angleChange)));
+                this.setRotate(this.getRotate() - angleChange);
+                //this.setRotate(Math.atan((this.getY() - ((screenHeight/2)))/(this.getX() - ((screenWidth/2)))));
+                //setVelocity(new Point2D(Math.cos(Math.toRadians(getRotate())), Math.sin(Math.toRadians(getRotate()))));
+            } else {
+                this.setTranslateX(((screenWidth/2)-(width/2)) + 100 * (Math.cos(this.getRotate() + angleChange)));
+                this.setTranslateY(((screenHeight/2)-(height/2)) + 100 * (Math.sin(this.getRotate() + angleChange)));
+                this.setX(((screenWidth/2)-(width/2)) + (int)(100 * Math.cos(this.getRotate() + angleChange)));
+                this.setY(((screenHeight/2)-(height/2)) + (int)(100 * Math.sin(this.getRotate() + angleChange)));
+                this.setRotate(this.getRotate() + angleChange);
+                //this.setRotate(Math.atan((this.getY() - ((screenHeight/2)))/(this.getX() - ((screenWidth/2)))));
+            }
+            timeOfLastMove = timeNow;
         }
     }
 

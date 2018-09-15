@@ -74,7 +74,6 @@ public class Main extends Application {
             //adding to roots
             menuRoot.setCenter(bttn);
 
-            //gameRoot.getChildren().addAll(player);
             stage.setTitle("The Elimination of Space Pollution");
             stage.setScene(scene);
             stage.setFullScreen(true);
@@ -87,10 +86,10 @@ public class Main extends Application {
 
     public void update(Stage stage) {
             if (isPressed(KeyCode.RIGHT)) {
-                    player.moveClockwise(true);
+                    player.moveClockwise(true, 25);
             }
             if (isPressed(KeyCode.LEFT)) {
-                    player.moveClockwise(true);
+                    player.moveClockwise(false, 25);
             }
             if (isPressed(KeyCode.SPACE)) {
                     shoot();
@@ -102,6 +101,7 @@ public class Main extends Application {
 
     public void updateProjectiles(){
             for(Projectile projectile:projectiles){
+                projectile.move();
                     for(Debris debris:debris){
                             if(projectile.enemyColliding(debris)){
                                     projectile.setAlive(false);
@@ -150,11 +150,13 @@ public class Main extends Application {
     }
 
     public void shoot() {
-            Projectile projectile = new Projectile("IMG HERE", player.getX(), player.getY(), 10, 10);
-            projectile.setVelocity(player.getVelocity().normalize().multiply(5));
+            Projectile projectile = new Projectile("file:src/sprites/rocket.png", player.getX(), player.getY(), 50, 50);
+            projectile.setVelocityX(5);
+            projectile.setVelocityY(5);
             projectile.setTranslateX(player.getTranslateX());
             projectile.setTranslateY(player.getTranslateY());
             projectiles.add(projectile);
+            gameRoot.getChildren().add(projectile);
     }
 
     public boolean isPressed(KeyCode key) {
