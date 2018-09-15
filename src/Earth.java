@@ -18,33 +18,41 @@ public class Earth extends Pane {
 	int screenWidth;
 	int screenHeight;
 
-    public Rectangle healthBarOutline;
-    public Rectangle actualHealth;
-    public Rectangle lostHealth;
-    public boolean alive = true;
-    public int health;
-    public int totalHealth;
+	public Rectangle healthBarOutline;
+	public Rectangle actualHealth;
+	public Rectangle lostHealth;
+	public boolean alive = true;
+	public int health;
+	public int totalHealth;
 
-    public Earth(String img, int health, int width, int height, int screenWidth, int screenHeight) {
-        Image earthImage = new Image(img);
-        ImageView earthIV = new ImageView(earthImage);
-        this.iv = earthIV;
-        this.iv.setViewport(new Rectangle2D(offsetX, offsetY, width, height));
-        this.health = health;
-        this.totalHealth = health;
+	public Earth(String img, int health, int width, int height, int screenWidth, int screenHeight) {
+		Image earthImage = new Image(img);
+		ImageView earthIV = new ImageView(earthImage);
+		this.iv = earthIV;
+		this.iv.setViewport(new Rectangle2D(offsetX, offsetY, width, height));
+		this.health = health;
+		this.totalHealth = health;
 
-        this.width = width;
-        this.height = height;
-        this.screenWidth = screenWidth;
-        this.screenHeight = screenHeight;
-        this.getChildren().addAll(iv);
-        setPosition();
-    }
-    
-    public void setPosition(){
-        this.setTranslateX((screenWidth/2)-(width/2));
-        this.setTranslateY((screenHeight/2)-(height/2));
-	this.x = (screenWidth/2)-(width/2);
-        this.y = (screenHeight/2)-(height/2);
-    }
+		this.width = width;
+		this.height = height;
+		this.screenWidth = screenWidth;
+		this.screenHeight = screenHeight;
+		this.getChildren().addAll(iv);
+		setPosition();
+	}
+
+	public void setPosition() {
+		this.setTranslateX((screenWidth / 2) - (width / 2));
+		this.setTranslateY((screenHeight / 2) - (height / 2));
+		this.x = (screenWidth / 2) ;
+		this.y = (screenHeight / 2) ;
+	}
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
 }

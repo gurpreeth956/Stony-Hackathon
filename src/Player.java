@@ -45,13 +45,13 @@ public class Player extends Pane {
 
     public void moveClockwise(boolean dir) {
         if (dir) {
-            this.setTranslateX(((screenWidth/2)-(width/2)) + 100 * (Math.cos((int)this.getRotate() + 5)));
-            this.setTranslateY(((screenHeight/2)-(height/2)) + 100 * (Math.sin((int)this.getRotate() + 5)));
+            this.setTranslateX(((screenWidth/2)-(width/2)) + 100 * (Math.cos((int)this.getRotate() + 25)));
+            this.setTranslateY(((screenHeight/2)-(height/2)) + 100 * (Math.sin((int)this.getRotate() + 25)));
             //System.out.println(("cos" + (100 * Math.cos((int)this.getRotate() - 5))));
             //System.out.println(("sin" + (100 * Math.sin((int)this.getRotate() - 5))));
-            this.setX(((screenWidth/2)-(width/2)) + (int)(100 * Math.cos((int)this.getRotate() + 5)));
-            this.setY(((screenHeight/2)-(height/2)) + (int)(100 * Math.sin((int)this.getRotate() + 5)));
-            this.setRotate(this.getRotate() + 5);
+            this.setX(((screenWidth/2)-(width/2)) + (int)(100 * Math.cos((int)this.getRotate() + 25)));
+            this.setY(((screenHeight/2)-(height/2)) + (int)(100 * Math.sin((int)this.getRotate() + 25)));
+            this.setRotate(this.getRotate() + 25);
             //setVelocity(new Point2D(Math.cos(Math.toRadians(getRotate())), Math.sin(Math.toRadians(getRotate()))));
         } else {
             //iv.setRotate(iv.getRotate() - 5);
