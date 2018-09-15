@@ -20,7 +20,7 @@ public class Player {
         this.y = posY;
     }
     
-    public void move() {
+    public void moveClockwise(boolean dir) {
         
     }
     

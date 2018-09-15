@@ -1,8 +1,10 @@
+import java.util.HashMap;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
@@ -16,7 +18,9 @@ public class Main extends Application {
     static Pane gameRoot;
     static BorderPane menuRoot;
     
+    Player player;
     
+    private final HashMap<KeyCode, Boolean> keys = new HashMap();
     static Rectangle2D screenSize = Screen.getPrimary().getVisualBounds();
     
     public static void main(String[] args) {
@@ -29,6 +33,11 @@ public class Main extends Application {
         gameRoot = new Pane();
         menuRoot = new BorderPane();
         scene = new Scene(menuRoot, screenSize.getWidth(), screenSize.getHeight());
+        
+        player = new Player((int)screenSize.getWidth(), (int)screenSize.getHeight());
+        
+        scene.setOnKeyPressed(e -> keys.put(e.getCode(), true));
+        scene.setOnKeyReleased(e -> keys.put(e.getCode(), false));
         
         Button bttn = new Button("Start");
         bttn.setOnAction(e -> {
@@ -43,7 +52,10 @@ public class Main extends Application {
         };
         timer.start();
         
+        //adding to roots
         menuRoot.setCenter(bttn);
+        
+        //gameRoot.getChildren().addAll(player);
         stage.setTitle("The Elimination of Space Pollution");
         stage.setScene(scene);
         stage.setFullScreen(true);
@@ -55,6 +67,22 @@ public class Main extends Application {
     }
     
     public void update(Stage stage) {
-        
+        if (isPressed(KeyCode.RIGHT)) {
+            player.moveClockwise(true);
+        }
+        if (isPressed(KeyCode.LEFT)) {
+            player.moveClockwise(false);
+        }
+        if (isPressed(KeyCode.SPACE)) {
+            shoot();
+        }
+    }
+    
+    public void shoot() {
+    
+    }
+    
+    public boolean isPressed(KeyCode key) {
+        return keys.getOrDefault(key, false);
     }
 }
