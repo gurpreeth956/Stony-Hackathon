@@ -112,5 +112,9 @@ public class Player extends Pane {
 	public int getScore(){
 		return score;
 	}
+        
+        public void setScore(int i) {
+            this.score = i;
+        }
 
 }

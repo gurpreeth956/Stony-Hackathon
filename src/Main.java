@@ -509,6 +509,7 @@ public class Main extends Application {
         if (alreadyStarted) {
             gameRoot.getChildren().removeAll(player, earth, health, healthBarOutline, lostHealth,
                             actualHealth, coinAndScore, earthActualHealth, earthHealthBar, earthLostHealth);
+            player.setScore(0);
         }
             player = new Player("file:src/sprites/player.png", 5, 25, 25, (int) screenSize.getWidth(), (int) screenSize.getHeight());
             earth = new Earth("file:src/sprites/Earth.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
@@ -545,6 +546,7 @@ public class Main extends Application {
 	public void createHowRoot() {
 		Text title = new Text("How To Play");
 		title.setFont(Font.font("Arial", 40));
+                title.setFill(Color.WHITE);
 		BorderPane.setAlignment(title, Pos.TOP_CENTER);
 		howRoot = new BorderPane();
 		VBox howBox = createHowBox();
@@ -644,6 +646,7 @@ public class Main extends Application {
 
 		Text title = new Text("PAUSE MENU");
 		title.setFont(Font.font("Arial", 50));
+                title.setFill(Color.WHITE);
 
 		vbox.setAlignment(Pos.CENTER);
 		pauseRoot.setTop(title);
@@ -652,6 +655,7 @@ public class Main extends Application {
 
 		BorderPane.setAlignment(title, Pos.TOP_CENTER);
 		BorderPane.setMargin(title, new Insets(100));
+                pauseRoot.setId("menu");
 	}
 
 	public void clearAll() {
