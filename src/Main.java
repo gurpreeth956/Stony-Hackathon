@@ -239,7 +239,7 @@ public class Main extends Application {
 			randX = (Math.random() * (screenSize.getWidth() + 160) - 160);
 		}
 
-		Debris newdebris = new Debris("file:src/sprites/rocket.png", randX, randY, 3, 1, 50, 50, screenSize);
+		Debris newdebris = new Debris("file:src/sprites/Asteroid.png", randX, randY, 3, 1, 50, 50, screenSize);
 		gameRoot.getChildren().add(newdebris);
 		debris.add(newdebris);
 	}
@@ -480,7 +480,7 @@ public class Main extends Application {
                             actualHealth, coinAndScore, earthActualHealth, earthHealthBar, earthLostHealth);
         }
             player = new Player("file:src/sprites/player.png", 5, 25, 25, (int) screenSize.getWidth(), (int) screenSize.getHeight());
-            earth = new Earth("file:src/sprites/EarthM.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+            earth = new Earth("file:src/sprites/Earth.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
             gameRoot.setId("backgroundgame");
             actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
             actualHealth.setFill(Color.web("#00F32C"));
