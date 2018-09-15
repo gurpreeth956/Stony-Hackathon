@@ -33,6 +33,7 @@ public class Main extends Application {
         gameRoot = new Pane();
         menuRoot = new BorderPane();
         scene = new Scene(menuRoot, screenSize.getWidth(), screenSize.getHeight());
+        scene.getStylesheets().addAll(this.getClass().getResource("Design.css").toExternalForm());
         
         player = new Player((int)screenSize.getWidth(), (int)screenSize.getHeight());
         
