@@ -1,3 +1,4 @@
+
 import java.util.HashMap;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -17,17 +18,17 @@ public class Main extends Application {
     Scene scene;
     static Pane gameRoot;
     static BorderPane menuRoot;
-    
+
     Player player;
     Earth earth;
-    
+
     private final HashMap<KeyCode, Boolean> keys = new HashMap();
     static Rectangle2D screenSize = Screen.getPrimary().getVisualBounds();
-    
+
     public static void main(String[] args) {
         launch(args);
     }
-    
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         stage = primaryStage;
@@ -35,31 +36,28 @@ public class Main extends Application {
         menuRoot = new BorderPane();
         scene = new Scene(menuRoot, screenSize.getWidth(), screenSize.getHeight());
         scene.getStylesheets().addAll(this.getClass().getResource("Design.css").toExternalForm());
-        
-        player = new Player((int)screenSize.getWidth(), (int)screenSize.getHeight());
-        earth = new Earth("file:src/sprites/EarthM.png", 5, (int)screenSize.getWidth(), (int)screenSize.getHeight());
-        gameRoot.setId("backgroundgame");
-        
+
+        createGameRoot();
         scene.setOnKeyPressed(e -> keys.put(e.getCode(), true));
         scene.setOnKeyReleased(e -> keys.put(e.getCode(), false));
-        
+
         Button bttn = new Button("Start");
         bttn.setOnAction(e -> {
-            stage.getScene().setRoot(gameRoot);
+                stage.getScene().setRoot(gameRoot);
         });
-        
+
         AnimationTimer timer = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                update(stage);
-            }
+                @Override
+                public void handle(long now) {
+                        update(stage);
+                }
         };
         timer.start();
-        
+
         //adding to roots
         menuRoot.setCenter(bttn);
-        
-        gameRoot.getChildren().addAll(player, earth);
+
+        //gameRoot.getChildren().addAll(player);
         stage.setTitle("The Elimination of Space Pollution");
         stage.setScene(scene);
         stage.setFullScreen(true);
@@ -69,24 +67,31 @@ public class Main extends Application {
         stage.setResizable(false);
         stage.show();
     }
-    
+
     public void update(Stage stage) {
         if (isPressed(KeyCode.RIGHT)) {
-            player.moveClockwise(true);
+                player.moveClockwise(true);
         }
         if (isPressed(KeyCode.LEFT)) {
-            player.moveClockwise(false);
+                player.moveClockwise(false);
         }
         if (isPressed(KeyCode.SPACE)) {
-            shoot();
+                shoot();
         }
     }
-    
+
     public void shoot() {
-    
+
     }
-    
+
     public boolean isPressed(KeyCode key) {
         return keys.getOrDefault(key, false);
+    }
+
+    public void createGameRoot() {
+        player = new Player((int) screenSize.getWidth(), (int) screenSize.getHeight());
+        earth = new Earth("file:src/sprites/EarthM.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+        gameRoot.setId("backgroundgame");
+        gameRoot.getChildren().addAll(earth);
     }
 }
