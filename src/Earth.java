@@ -24,10 +24,6 @@ public class Earth extends Pane {
 	int screenWidth;
 	int screenHeight;
 
-	public static Rectangle healthBarOutline;
-	public static Rectangle actualHealth;
-	public static Rectangle lostHealth;
-        public static Label nameLabel;
 	public boolean alive = true;
 	public int health;
 	public int totalHealth;
@@ -56,20 +52,6 @@ public class Earth extends Pane {
 		this.screenHeight = screenHeight;
 		setPosition();
                 
-                nameLabel = new Label("EARTH");
-                nameLabel.setFont(new Font("Arial", 25));
-                nameLabel.setTextFill(Color.WHITE);
-                nameLabel.setTranslateX(10);
-                nameLabel.setTranslateY(700);
-                healthBarOutline = new Rectangle(355, 20, 541, 20);
-                healthBarOutline.setFill(Color.TRANSPARENT);
-                healthBarOutline.setStroke(Color.BLACK);
-                lostHealth = new Rectangle(356, 21, 540, 19);
-                lostHealth.setFill(Color.RED);
-                actualHealth = new Rectangle(356, 21, 540, 19);
-                actualHealth.setFill(Color.GREEN);
-                actualHealth.toFront();
-                
                 collisionRects = new ArrayList();
                 middle = new Rectangle(this.getTranslateX() + 37, this.getTranslateY() + 10, 87, 140);
                 middle.setFill(Color.TRANSPARENT);
@@ -91,8 +73,6 @@ public class Earth extends Pane {
 
 	public void hit() {
 		health--;
-                actualHealth = new Rectangle(356, 21, health * (540 / this.totalHealth), 19);
-                actualHealth.setFill(Color.GREEN);
 	}
 
 	public int getX() {

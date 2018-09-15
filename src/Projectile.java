@@ -98,10 +98,10 @@ public class Projectile extends Pane {
 	}
 
 	public boolean enemyColliding(Debris debris) {
-		return this.getBoundsInParent().intersects(debris.getBoundsInParent());
+            return this.getBoundsInParent().intersects(debris.getBoundsInParent());
 	}
 
 	public boolean astroColliding(Astronaut astro) {
-		return this.getBoundsInParent().intersects(astro.getBoundsInParent());
+            return this.getBoundsInParent().intersects(astro.getBoundsInParent());
 	}
 }
