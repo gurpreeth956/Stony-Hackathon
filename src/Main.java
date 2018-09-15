@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.List;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.application.Platform;
 ;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -13,11 +15,13 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -28,14 +32,18 @@ public class Main extends Application {
 	Stage stage;
 	Scene scene;
 	static Pane gameRoot;
-	static BorderPane menuRoot;
+	static BorderPane menuRoot, gameOverRoot;
+	static VBox exitRoot;
 
 	static Player player;
 	Earth earth;
 
 	private long lastHitTime = 0;
 	private long timeOfLastProjectile = 0;
-	private boolean gamePlay = false;
+	private boolean gameplay = false;
+
+	Button yesExit = new Button("Yes");
+	Button noExit = new Button("No");
 
 	static Rectangle healthBarOutline, actualHealth, lostHealth;
 	Label scoreLabel;
@@ -62,6 +70,7 @@ public class Main extends Application {
 		scene.getStylesheets().addAll(this.getClass().getResource("Design.css").toExternalForm());
 
 		createGameRoot();
+		createGameOverRoot();
 		scene.setOnKeyPressed(e -> keys.put(e.getCode(), true));
 		scene.setOnKeyReleased(e -> keys.put(e.getCode(), false));
 
@@ -94,7 +103,16 @@ public class Main extends Application {
 	}
 
 	public void update(Stage stage) {
-		if (gamePlay) {
+		if (gameplay) {
+			if (player.getHealth() == 0) {
+				Text gameOver = new Text("Game Over \n Score:  " + player.getScore());
+				gameOver.setFont(Font.font("Arial", 50));
+				gameOverRoot.setTop(gameOver);
+				BorderPane.setAlignment(gameOver, Pos.CENTER);
+				BorderPane.setMargin(gameOver, new Insets(100));
+				stage.getScene().setRoot(gameOverRoot);
+				gameplay = false;
+			}
 			if (isPressed(KeyCode.RIGHT)) {
 				player.moveClockwise(true, 25);
 			}
@@ -216,9 +234,7 @@ public class Main extends Application {
 		if (time < 0 || time > 250) {
 			Projectile projectile = new Projectile("file:src/sprites/HomingShot.png", player.getX(), player.getY(), 24, 10);
 			projectile.setVelocityX(5);
-			projectile.setVelocityY(5);//player.getVelocity().normalize().multiply(5));
-			//projectile.setTranslateX(player.getTranslateX());
-			//projectile.setTranslateY(player.getTranslateY());
+			projectile.setVelocityY(5);
 			projectiles.add(projectile);
 			gameRoot.getChildren().add(projectile);
 			timeOfLastProjectile = timeNow;
@@ -253,6 +269,46 @@ public class Main extends Application {
 		coinAndScore.toBack();
 	}
 
+	public void createGameOverRoot() {
+		VBox gameOverBox = addGameOverButtons(stage);
+		gameOverBox.setAlignment(Pos.TOP_CENTER);
+		gameOverRoot = new BorderPane();
+		gameOverRoot.setId("menu");
+		gameOverRoot.setCenter(gameOverBox);
+		exitRoot = new VBox(20);
+        Label exitString = new Label("Are you sure you want to exit?");
+        exitString.setFont(Font.font("Arial", 25));
+        HBox exitButtons = new HBox(10);
+        exitButtons.getChildren().addAll(yesExit, noExit);
+        exitButtons.setAlignment(Pos.CENTER);
+        exitRoot.getChildren().addAll(exitString, exitButtons);
+        exitRoot.setId("menu");
+        exitRoot.setAlignment(Pos.CENTER);
+	}
+
+	public VBox addGameOverButtons(Stage stage) {
+		VBox vbox = new VBox();
+		vbox.setPadding(new Insets(20));
+		vbox.setSpacing(10);
+
+		Button exitBtn = new Button("QUIT");
+		exitBtn.setOnAction(e -> {
+			stage.getScene().setRoot(exitRoot);
+
+			yesExit.setOnAction(eY -> {
+				Platform.exit();
+				gameplay = false;
+				clearAll();
+			});
+			noExit.setOnAction(eN -> {
+				stage.getScene().setRoot(gameOverRoot);
+			});
+		});
+
+		vbox.getChildren().addAll(exitBtn);
+		return vbox;
+	}
+
 	public void newGame() {
 		player = new Player("file:src/sprites/player.png", 5, 33, 33, (int) screenSize.getWidth(), (int) screenSize.getHeight());
 		earth = new Earth("file:src/sprites/EarthM.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
@@ -268,6 +324,15 @@ public class Main extends Application {
 		healthBarOutline.toFront();
 		lostHealth.toFront();
 		actualHealth.toFront();
-		gamePlay = true;
+		gameplay = true;
+	}
+
+	public void clearAll() {
+		projectiles.clear();
+		projectilesToRemove.clear();
+		debrisToRemove.clear();
+        debris.clear();
+		scoreLabel.setText("Score: ");
+        gameRoot.getChildren().clear();
 	}
 }
