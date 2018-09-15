@@ -80,6 +80,13 @@ public class Main extends Application {
 			newGame();
 		});
 
+		menuRoot.setCenter(bttn);
+		Text title = new Text("THE AWESOME SPACE GAME");
+		title.setFont(Font.font("Arial", 50));
+		menuRoot.setTop(title);
+		BorderPane.setAlignment(title, Pos.TOP_CENTER);
+		BorderPane.setMargin(title, new Insets(100));
+
 		AnimationTimer timer = new AnimationTimer() {
 			@Override
 			public void handle(long now) {
@@ -87,9 +94,6 @@ public class Main extends Application {
 			}
 		};
 		timer.start();
-
-		//adding to roots
-		menuRoot.setCenter(bttn);
 
 		//gameRoot.getChildren().addAll(player);
 		stage.setTitle("The Elimination of Space Pollution");
@@ -276,14 +280,14 @@ public class Main extends Application {
 		gameOverRoot.setId("menu");
 		gameOverRoot.setCenter(gameOverBox);
 		exitRoot = new VBox(20);
-        Label exitString = new Label("Are you sure you want to exit?");
-        exitString.setFont(Font.font("Arial", 25));
-        HBox exitButtons = new HBox(10);
-        exitButtons.getChildren().addAll(yesExit, noExit);
-        exitButtons.setAlignment(Pos.CENTER);
-        exitRoot.getChildren().addAll(exitString, exitButtons);
-        exitRoot.setId("menu");
-        exitRoot.setAlignment(Pos.CENTER);
+		Label exitString = new Label("Are you sure you want to exit?");
+		exitString.setFont(Font.font("Arial", 25));
+		HBox exitButtons = new HBox(10);
+		exitButtons.getChildren().addAll(yesExit, noExit);
+		exitButtons.setAlignment(Pos.CENTER);
+		exitRoot.getChildren().addAll(exitString, exitButtons);
+		exitRoot.setId("menu");
+		exitRoot.setAlignment(Pos.CENTER);
 	}
 
 	public VBox addGameOverButtons(Stage stage) {
@@ -331,8 +335,8 @@ public class Main extends Application {
 		projectiles.clear();
 		projectilesToRemove.clear();
 		debrisToRemove.clear();
-        debris.clear();
+		debris.clear();
 		scoreLabel.setText("Score: ");
-        gameRoot.getChildren().clear();
+		gameRoot.getChildren().clear();
 	}
 }
