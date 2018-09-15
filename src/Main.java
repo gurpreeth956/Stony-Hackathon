@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -6,6 +8,8 @@ import javafx.stage.Stage;
 
 public class Main extends Application {
 
+	public static List<Projectile> projectiles = new ArrayList();
+    private List<Projectile> projToRemove = new ArrayList();
     Stage stage;
     Scene scene;
     static Pane gameArea;
@@ -20,7 +24,7 @@ public class Main extends Application {
         gameArea = new Pane();
         scene = new Scene(gameArea, 200, 200);
         
-        Button bttn = new Button("Start");
+        Button bttn = new Button("Start"); //Button to start game
         bttn.setOnAction(e -> {
             stage.close();
         });
