@@ -19,6 +19,7 @@ public class Main extends Application {
     static BorderPane menuRoot;
     
     Player player;
+    Earth earth;
     
     private final HashMap<KeyCode, Boolean> keys = new HashMap();
     static Rectangle2D screenSize = Screen.getPrimary().getVisualBounds();
@@ -36,6 +37,8 @@ public class Main extends Application {
         scene.getStylesheets().addAll(this.getClass().getResource("Design.css").toExternalForm());
         
         player = new Player((int)screenSize.getWidth(), (int)screenSize.getHeight());
+        earth = new Earth("file:src/sprites/EarthM.png", 5, (int)screenSize.getWidth(), (int)screenSize.getHeight());
+        gameRoot.setId("backgroundgame");
         
         scene.setOnKeyPressed(e -> keys.put(e.getCode(), true));
         scene.setOnKeyReleased(e -> keys.put(e.getCode(), false));
@@ -56,7 +59,7 @@ public class Main extends Application {
         //adding to roots
         menuRoot.setCenter(bttn);
         
-        //gameRoot.getChildren().addAll(player);
+        gameRoot.getChildren().addAll(player, earth);
         stage.setTitle("The Elimination of Space Pollution");
         stage.setScene(scene);
         stage.setFullScreen(true);

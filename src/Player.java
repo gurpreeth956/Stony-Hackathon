@@ -1,7 +1,8 @@
 
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 
-public class Player {
+public class Player extends Pane {
     
     ImageView iv;
     int offsetX = 0;
