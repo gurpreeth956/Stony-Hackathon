@@ -1,13 +1,12 @@
-
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -20,6 +19,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.AudioClip;
+import static javafx.scene.media.AudioClip.INDEFINITE;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
@@ -73,6 +76,23 @@ public class Main extends Application {
 		menuRoot = new BorderPane();
 		scene = new Scene(menuRoot, screenSize.getWidth(), screenSize.getHeight());
 		scene.getStylesheets().addAll(this.getClass().getResource("Design.css").toExternalForm());
+                
+                final Task task = new Task() {
+                    @Override
+                    protected Object call() throws Exception {
+                        int s = INDEFINITE;
+                        AudioClip audio = new AudioClip(getClass().getResource("sprites/gamemusic.wav").toExternalForm());
+                        audio.setVolume(0.5f);
+                        audio.setCycleCount(s);
+                        audio.play();
+                        return null;
+                    }
+                };
+                Thread thread = new Thread(task);
+                thread.start();
+                
+                /*AudioClip note = new AudioClip(this.getClass().getResource("sprites/gamemusic.wav").toString());
+                note.play();*/
 
 		createGameRoot();
 		createGameOverRoot();
@@ -134,6 +154,7 @@ public class Main extends Application {
 		stage.resizableProperty().setValue(Boolean.FALSE);
 		stage.setResizable(false);
 		stage.show();
+	}
 	}
 
 	public void update(Stage stage) {
@@ -249,7 +270,7 @@ public class Main extends Application {
 		}
 
 		Astronaut astronaut = new Astronaut("file:src/sprites/Astronaut.png", randX, randY, 3, 1, 50, 50, screenSize);
-		gameRoot.getChildren().add(astronaut);
+		gameRoot.getChildren().addAll(astronaut, astronaut.middle);
 		astronauts.add(astronaut);
 	}
 
@@ -267,6 +288,8 @@ public class Main extends Application {
 		if (!astro.isAlive()) {
 			gameRoot.getChildren().remove(astro);
 			astronautsToRemove.add(astro);
+                        astro.updateHit();
+                        astro.middle.toFront();
 		}
 	}
 
@@ -337,6 +360,123 @@ public class Main extends Application {
 		}
 	}
 
+	public void createGameRoot() {
+		gameRoot = new Pane();
+		gameRoot.setId("backgroundgame");
+		Label healthLabel = new Label("Health: ");
+		healthLabel.setFont(new Font("Arial", 20));
+		healthLabel.setTextFill(Color.WHITE);
+		healthLabel.toFront();
+		healthBarOutline = new Rectangle(screenSize.getWidth() - 121, 9, 102, 22);
+		healthBarOutline.setFill(Color.TRANSPARENT);
+		healthBarOutline.setStroke(Color.BLACK);
+		lostHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
+		lostHealth.setFill(Color.RED);
+		actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
+		actualHealth.setFill(Color.web("#00F32C"));
+		health = new VBox(10);
+		health.getChildren().addAll(healthLabel);
+		health.setTranslateX(screenSize.getWidth() - 200);
+		health.setTranslateY(10);
+		scoreLabel = new Label("Score: ");
+		scoreLabel.setFont(new Font("Arial", 20));
+		scoreLabel.setTextFill(Color.WHITE);
+		coinAndScore = new VBox(10);
+		coinAndScore.getChildren().addAll(scoreLabel);
+		coinAndScore.setTranslateX(10);
+		coinAndScore.setTranslateY(10);
+		coinAndScore.toBack();
+
+		//For earth stuff
+		earthHealthBar = new Rectangle(355, 20, 541, 20);
+		earthHealthBar.setFill(Color.TRANSPARENT);
+		earthHealthBar.setStroke(Color.BLACK);
+		earthLostHealth = new Rectangle(356, 21, 540, 19);
+		earthLostHealth.setFill(Color.RED);
+		earthActualHealth = new Rectangle(356, 21, 540, 19);
+		earthActualHealth.setFill(Color.GREEN);
+	}
+
+	public void createGameOverRoot() {
+		VBox gameOverBox = addGameOverButtons(stage);
+		gameOverBox.setAlignment(Pos.TOP_CENTER);
+		gameOverRoot = new BorderPane();
+		gameOverRoot.setId("menu");
+		gameOverRoot.setCenter(gameOverBox);
+		exitRoot = new VBox(20);
+		Label exitString = new Label("Are you sure you want to exit?");
+		exitString.setFont(Font.font("Arial", 25));
+		HBox exitButtons = new HBox(10);
+		exitButtons.getChildren().addAll(yesExit, noExit);
+		exitButtons.setAlignment(Pos.CENTER);
+		exitRoot.getChildren().addAll(exitString, exitButtons);
+		exitRoot.setId("menu");
+		exitRoot.setAlignment(Pos.CENTER);
+	}
+
+	public VBox addGameOverButtons(Stage stage) {
+		VBox vbox = new VBox();
+		vbox.setPadding(new Insets(20));
+		vbox.setSpacing(10);
+
+		Button exitBtn = new Button("QUIT");
+		exitBtn.setOnAction(e -> {
+			stage.getScene().setRoot(exitRoot);
+
+			yesExit.setOnAction(eY -> {
+				Platform.exit();
+				gameplay = false;
+				clearAll();
+			});
+			noExit.setOnAction(eN -> {
+				stage.getScene().setRoot(gameOverRoot);
+			});
+		});
+                
+            Button newBtn = new Button("NEW GAME");
+            newBtn.setOnAction(e -> {
+            stage.getScene().setRoot(gameRoot);
+            clearAll();
+            newGame();
+        });
+
+		vbox.getChildren().addAll(exitBtn, newBtn);
+		return vbox;
+	}
+
+	public void clearAll() {
+		projectiles.clear();
+		projectilesToRemove.clear();
+		debrisToRemove.clear();
+		debris.clear();
+		scoreLabel.setText("Score: ");
+		gameRoot.getChildren().clear();
+	}
+    public void newGame() {
+            player = new Player("file:src/sprites/player.png", 5, 25, 25, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+            earth = new Earth("file:src/sprites/EarthM.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+            gameRoot.setId("backgroundgame");
+            actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
+            actualHealth.setFill(Color.web("#00F32C"));
+            earthActualHealth = new Rectangle(356, 21, 540, 19);
+            earthActualHealth.setFill(Color.GREEN);
+            gameRoot.getChildren().addAll(player, earth, health, healthBarOutline, lostHealth,
+                            actualHealth, coinAndScore, earthActualHealth, earthHealthBar, earthLostHealth);
+            coinAndScore.toFront();
+            scoreLabel.toFront();
+            health.toFront();
+            healthBarOutline.toFront();
+            lostHealth.toFront();
+            actualHealth.toFront();
+            earthHealthBar.toFront();
+            earthLostHealth.toFront();
+            earthActualHealth.toFront();
+            gameplay = true;
+            
+            //Collision rectangle additions
+            gameRoot.getChildren().addAll(earth.middle, earth.left, earth.right);
+            
+    }
 	public void createGameRoot() {
 		gameRoot = new Pane();
 		gameRoot.setId("backgroundgame");

@@ -1,4 +1,6 @@
 
+import java.util.ArrayList;
+import java.util.List;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -32,9 +34,10 @@ public class Astronaut extends Pane {
 	public boolean alive = true;
 	public int health;
 	public int totalHealth;
+        
+        public List<Rectangle> collisionRects;
+        public Rectangle middle;
 
-	//currently used only for bosses
-	public Label nameLabel;
 	public Astronaut(String img, double x, double y, int health, int coin, int width, int height, Rectangle2D screenSize){
 			this.setTranslateX(x);
 		this.setTranslateY(y);
@@ -54,19 +57,20 @@ public class Astronaut extends Pane {
 		this.height = height;
 		this.getChildren().addAll(iv);
 
-		healthBarOutline = new Rectangle(x - 1, y - 6, width + 2, 4);
-		healthBarOutline.setFill(Color.TRANSPARENT);
-		healthBarOutline.setStroke(Color.BLACK);
-		lostHealth = new Rectangle(x, y - 5, width, 3);
-		lostHealth.setFill(Color.RED);
-		actualHealth = new Rectangle(x, y - 5, width, 3);
-		actualHealth.setFill(Color.GREEN);
-		actualHealth.toFront();
+		collisionRects = new ArrayList();
+                middle = new Rectangle(this.getTranslateX() + 20, this.getTranslateY() + 12, 10, 28);
+                middle.setFill(Color.TRANSPARENT);
+                collisionRects.add(middle);
 	}
 
 	public void setCharacterView(int offsetX, int offsetY) {
 		this.iv.setViewport(new Rectangle2D(offsetX, offsetY, width, height));
 	}
+        
+        public void updateHit() {
+            middle.setX(this.getTranslateX());
+            middle.setY(this.getTranslateY());
+        }
 
 	public void move(Rectangle2D screenSize) {
 		if (pointer < xpoints.length) {
@@ -127,11 +131,23 @@ public class Astronaut extends Pane {
 	}
 
 	public boolean isColliding(Player player) {
-		return this.getBoundsInParent().intersects(player.getBoundsInParent());
+            boolean colliding = false;
+            for (Rectangle rect : this.collisionRects) {
+                if (this.getBoundsInParent().intersects(player.getBoundsInParent())) {
+                    colliding = true;
+                }
+            }
+            return colliding;
 	}
 
 	public boolean isEarthColliding(Earth earth) {
-		return this.getBoundsInParent().intersects(earth.getBoundsInParent());
-
+            boolean colliding = false;
+            for (Rectangle rect : earth.collisionRects) {
+		if (this.getBoundsInParent().intersects(rect.getBoundsInParent())) {
+                    colliding = true;
+                }
+            }
+            return colliding;
+	
 	}
 }
