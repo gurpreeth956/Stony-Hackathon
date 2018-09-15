@@ -39,7 +39,7 @@ public class Main extends Application {
 	Stage stage;
 	Scene scene;
 	static Pane gameRoot;
-	static BorderPane menuRoot, gameOverRoot, howRoot, scoreRoot, pauseRoot;
+	static BorderPane menuRoot, gameOverRoot, howRoot, pauseRoot;
 
 	static Player player;
 	Earth earth;
@@ -115,10 +115,6 @@ public class Main extends Application {
 		playBtn.setOnAction(e -> {
 			stage.getScene().setRoot(howRoot);
 		});
-		Button scoreBtn = new Button("High Scores");
-		scoreBtn.setOnAction(e -> {
-			stage.getScene().setRoot(scoreRoot);
-		});
 		Button exitBtn = new Button("Quit");
 		exitBtn.setOnAction(e -> {
 			stage.getScene().setRoot(exitRoot);
@@ -133,10 +129,10 @@ public class Main extends Application {
 			});
 		});
 		menuBox = new VBox(10);
-		menuBox.getChildren().addAll(startBtn, playBtn, scoreBtn, exitBtn);
+		menuBox.getChildren().addAll(startBtn, playBtn, exitBtn);
 		menuRoot.setCenter(menuBox);
 		menuBox.setAlignment(Pos.CENTER);
-		Text title = new Text("THE AWESOME SPACE GAME");
+		Text title = new Text("EARTH PROTECTOR");
                 title.setFill(Color.WHITE);
 		title.setFont(Font.font("Arial", 50));
 		menuRoot.setTop(title);
@@ -549,6 +545,7 @@ public class Main extends Application {
 		howRoot.setBottom(backBtn);
 		BorderPane.setAlignment(backBtn, Pos.BOTTOM_CENTER);
 		BorderPane.setMargin(backBtn, new Insets(50));
+                howRoot.setId("menu");
 	}
 	
 	public VBox createHowBox(){
@@ -556,6 +553,7 @@ public class Main extends Application {
 		Image arrowImage = new Image("file:src/sprites/ArrowKeys.png");
 		ImageView arrowIV = new ImageView(arrowImage);
 		Text arrowText = new Text("Use the arrowkeys to move the player");
+                arrowText.setFill(Color.WHITE);
 		arrowText.setFont(Font.font("Arial", 20));
 		HBox arrowBox = new HBox(arrowIV, arrowText);
 		arrowBox.setAlignment(Pos.CENTER);
@@ -563,18 +561,21 @@ public class Main extends Application {
 		ImageView barIV = new ImageView(barImage);
 		Text barText = new Text("Use the spacebar to shoot");
 		barText.setFont(Font.font("Arial", 20));
+                barText.setFill(Color.WHITE);
 		HBox barBox = new HBox(barIV, barText);
 		barBox.setAlignment(Pos.CENTER);
 		Image asteroidImage = new Image("file:src/sprites/ControlAsteroid.png");
 		ImageView asteroidIV = new ImageView(asteroidImage);
 		Text asteroidText = new Text("\n\nHit the asteroids before they reach the Earth");
 		asteroidText.setFont(Font.font("Arial", 20));
+                asteroidText.setFill(Color.WHITE);
 		HBox asteroidBox = new HBox(asteroidIV, asteroidText);
 		asteroidBox.setAlignment(Pos.CENTER);
 		Image astroImage = new Image("file:src/sprites/ControlAstronaut.png");
 		ImageView astroIV = new ImageView(astroImage);
 		Text astroText = new Text("\n\nSave the astronauts by catching them");
 		astroText.setFont(Font.font("Arial", 20));
+                astroText.setFill(Color.WHITE);
 		HBox astroBox = new HBox(astroIV, astroText);
 		astroBox.setAlignment(Pos.CENTER);
 		controls.getChildren().addAll(arrowBox, barBox, asteroidBox, astroBox);
