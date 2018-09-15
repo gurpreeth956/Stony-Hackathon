@@ -3,8 +3,9 @@ import java.util.HashMap;
 import java.util.List;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
-;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -12,30 +13,35 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
-
-
 
 public class Main extends Application {
 
 	Stage stage;
 	Scene scene;
 	static Pane gameRoot;
-	static BorderPane menuRoot;
+	static BorderPane menuRoot, gameOverRoot;
 
 	static Player player;
 	Earth earth;
 
+        static VBox exitRoot;
+
 	private long lastHitTime = 0;
 	private long timeOfLastProjectile = 0;
-	private boolean gamePlay = false;
+	private boolean gameplay = false;
 
+	Button yesExit = new Button("Yes");
+	Button noExit = new Button("No");
+        
 	static Rectangle healthBarOutline, actualHealth, lostHealth; //for player
         static Rectangle earthHealthBar, earthActualHealth, earthLostHealth; //for earth
 	Label scoreLabel;
@@ -56,91 +62,105 @@ public class Main extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		stage = primaryStage;
-		menuRoot = new BorderPane();
-		scene = new Scene(menuRoot, screenSize.getWidth(), screenSize.getHeight());
-		scene.getStylesheets().addAll(this.getClass().getResource("Design.css").toExternalForm());
+            stage = primaryStage;
+            menuRoot = new BorderPane();
+            scene = new Scene(menuRoot, screenSize.getWidth(), screenSize.getHeight());
+            scene.getStylesheets().addAll(this.getClass().getResource("Design.css").toExternalForm());
 
-		createGameRoot();
-		scene.setOnKeyPressed(e -> keys.put(e.getCode(), true));
-		scene.setOnKeyReleased(e -> keys.put(e.getCode(), false));
+            createGameRoot();
+            createGameOverRoot();
+            scene.setOnKeyPressed(e -> keys.put(e.getCode(), true));
+            scene.setOnKeyReleased(e -> keys.put(e.getCode(), false));
 
-		Button bttn = new Button("Start");
-		bttn.setOnAction(e -> {
-			stage.getScene().setRoot(gameRoot);
-			newGame();
-		});
+            Button bttn = new Button("Start");
+            bttn.setOnAction(e -> {
+                    stage.getScene().setRoot(gameRoot);
+                    newGame();
+            });
 
-		AnimationTimer timer = new AnimationTimer() {
-			@Override
-			public void handle(long now) {
-				update(stage);
-			}
-		};
-		timer.start();
+            menuRoot.setCenter(bttn);
+            Text title = new Text("THE AWESOME SPACE GAME");
+            title.setFont(Font.font("Arial", 50));
+            menuRoot.setTop(title);
+            BorderPane.setAlignment(title, Pos.TOP_CENTER);
+            BorderPane.setMargin(title, new Insets(100));
 
-		//adding to roots
-		menuRoot.setCenter(bttn);
+            AnimationTimer timer = new AnimationTimer() {
+                    @Override
+                    public void handle(long now) {
+                            update(stage);
+                    }
+            };
+            timer.start();
 
-		//gameRoot.getChildren().addAll(player);
-		stage.setTitle("The Elimination of Space Pollution");
-		stage.setScene(scene);
-		stage.setFullScreen(true);
-		stage.setFullScreenExitHint("");
-		stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
-		stage.resizableProperty().setValue(Boolean.FALSE);
-		stage.setResizable(false);
-		stage.show();
+            //gameRoot.getChildren().addAll(player);
+            stage.setTitle("The Elimination of Space Pollution");
+            stage.setScene(scene);
+            stage.setFullScreen(true);
+            stage.setFullScreenExitHint("");
+            stage.setFullScreenExitKeyCombination(KeyCombination.NO_MATCH);
+            stage.resizableProperty().setValue(Boolean.FALSE);
+            stage.setResizable(false);
+            stage.show();
 	}
 
 	public void update(Stage stage) {
-            if (gamePlay) {
-                    if (isPressed(KeyCode.RIGHT)) {
-                            player.moveClockwise(true, 25);
-                    }
-                    if (isPressed(KeyCode.LEFT)) {
-                            player.moveClockwise(false, 25);
-                    }
-                    if (isPressed(KeyCode.SPACE)) {
-                            shoot();
-                    }
-                    if (Math.random() < 0.01) {
-                            createDebris();
-                    }
-                    for (Projectile proj : projectiles) {
-                            updateProjectiles(proj);
-                    }
-                    for (Debris debri : debris) {
-                            updateDebris(debri);
-                    }
-                    clearLists();
+            if (gameplay) {
+                if (player.getHealth() == 0 || earth.getHealth() == 0) {
+                    Text gameOver = new Text("Game Over \n Score:  " + player.getScore());
+                    gameOver.setFont(Font.font("Arial", 50));
+                    gameOverRoot.setTop(gameOver);
+                    BorderPane.setAlignment(gameOver, Pos.CENTER);
+                    BorderPane.setMargin(gameOver, new Insets(100));
+                    stage.getScene().setRoot(gameOverRoot);
+                    gameplay = false;
+                }
+                if (isPressed(KeyCode.RIGHT)) {
+                        player.moveClockwise(true, 25);
+                }
+                if (isPressed(KeyCode.LEFT)) {
+                        player.moveClockwise(false, 25);
+                }
+                if (isPressed(KeyCode.SPACE)) {
+                        shoot();
+                }
+                if (Math.random() < 0.01) {
+                        createDebris();
+                }
+                for (Projectile proj : projectiles) {
+                        updateProjectiles(proj);
+                }
+                for (Debris debri : debris) {
+                        updateDebris(debri);
+                }
+                clearLists();
             }
 	}
 
 	public void createDebris() {
-		double randX = 0;
-		double randY = 0;
-		int scenerios = (int) (Math.random() * 4);
-		if (scenerios == 0) {
-			randX = -160;
-			randY = (Math.random() * (screenSize.getHeight() + 160) - 160);
-		}
-		if (scenerios == 1) {
-			randX = screenSize.getWidth();
-			randY = (Math.random() * (screenSize.getHeight() + 160) - 160);
-		}
-		if (scenerios == 2) {
-			randY = -160;
-			randX = (Math.random() * (screenSize.getWidth() + 160) - 160);
-		}
-		if (scenerios == 3) {
-			randY = screenSize.getHeight();
-			randX = (Math.random() * (screenSize.getWidth() + 160) - 160);
-		}
+            double randX = 0;
+            double randY = 0;
+            int scenerios = (int) (Math.random() * 4);
+            if (scenerios == 0) {
+                    randX = -160;
+                    randY = (Math.random() * (screenSize.getHeight() + 160) - 160);
+            }
+            if (scenerios == 1) {
+                    randX = screenSize.getWidth();
+                    randY = (Math.random() * (screenSize.getHeight() + 160) - 160);
+            }
+            if (scenerios == 2) {
+                    randY = -160;
+                    randX = (Math.random() * (screenSize.getWidth() + 160) - 160);
+            }
+            if (scenerios == 3) {
+                    randY = screenSize.getHeight();
+                    randX = (Math.random() * (screenSize.getWidth() + 160) - 160);
+            }
 
-		Debris newdebris = new Debris("file:src/sprites/rocket.png", randX, randY, 3, 1, 50, 50, screenSize);
-		gameRoot.getChildren().add(newdebris);
-		debris.add(newdebris);
+            Debris newdebris = new Debris("file:src/sprites/rocket.png", randX, randY, 3, 1, 50, 50, screenSize);
+            gameRoot.getChildren().add(newdebris);
+            debris.add(newdebris);
 	}
 
 	public void updateDebris(Debris debri) {
@@ -164,10 +184,9 @@ public class Main extends Application {
                 debri.setAlive(false);
             }
             if (!debri.isAlive()) {
-                    gameRoot.getChildren().remove(debri);
-                    debrisToRemove.add(debri);
+                gameRoot.getChildren().remove(debri);
+                debrisToRemove.add(debri);
             }
-
 	}
 
 	public boolean isPressed(KeyCode key) {
@@ -175,26 +194,25 @@ public class Main extends Application {
 	}
 
 	public void updateProjectiles(Projectile projectile) {
-		projectile.move(earth);
-		for (Debris debris : debris) {
-			if (projectile.enemyColliding(debris)) {
-				projectile.setAlive(false);
-				debris.setAlive(false);
-				player.increaseScore();
-				scoreLabel.setText("Score: " + player.getScore());
-				scoreLabel.setTextFill(Color.WHITE);
-			}
-		}
-		if (projectile.getTranslateX() <= 0 || projectile.getTranslateX() >= scene.getWidth()) {
-			projectile.setAlive(false);
-		} else if (projectile.getTranslateY() <= 0 || projectile.getTranslateY() >= scene.getHeight()) {
-			projectile.setAlive(false);
-		}
-		if (!projectile.isAlive()) {
-			gameRoot.getChildren().remove(projectile);
-			projectilesToRemove.add(projectile);
-		}
-
+            projectile.move(earth);
+            for (Debris debris : debris) {
+                if (projectile.enemyColliding(debris)) {
+                        projectile.setAlive(false);
+                        debris.setAlive(false);
+                        player.increaseScore();
+                        scoreLabel.setText("Score: " + player.getScore());
+                        scoreLabel.setTextFill(Color.WHITE);
+                }
+            }
+            if (projectile.getTranslateX() <= 0 || projectile.getTranslateX() >= scene.getWidth()) {
+                    projectile.setAlive(false);
+            } else if (projectile.getTranslateY() <= 0 || projectile.getTranslateY() >= scene.getHeight()) {
+                    projectile.setAlive(false);
+            }
+            if (!projectile.isAlive()) {
+                    gameRoot.getChildren().remove(projectile);
+                    projectilesToRemove.add(projectile);
+            }
 	}
 
 	public void clearLists() {
@@ -215,76 +233,123 @@ public class Main extends Application {
 	}
 
 	public void shoot() {
-		long timeNow = System.currentTimeMillis();
-		long time = timeNow - timeOfLastProjectile;
-		if (time < 0 || time > 250) {
-			Projectile projectile = new Projectile("file:src/sprites/HomingShot.png", player.getX(), player.getY(), 24, 10);
-			projectile.setVelocityX(5);
-			projectile.setVelocityY(5);//player.getVelocity().normalize().multiply(5));
-			//projectile.setTranslateX(player.getTranslateX());
-			//projectile.setTranslateY(player.getTranslateY());
-			projectiles.add(projectile);
-			gameRoot.getChildren().add(projectile);
-			timeOfLastProjectile = timeNow;
-		}
+            long timeNow = System.currentTimeMillis();
+            long time = timeNow - timeOfLastProjectile;
+            if (time < 0 || time > 250) {
+                    Projectile projectile = new Projectile("file:src/sprites/HomingShot.png", player.getX(), player.getY(), 24, 10);
+                    projectile.setVelocityX(5);
+                    projectile.setVelocityY(5);
+                    projectiles.add(projectile);
+                    gameRoot.getChildren().add(projectile);
+                    timeOfLastProjectile = timeNow;
+            }
 	}
 
-	public void createGameRoot() {
-		gameRoot = new Pane();
-		gameRoot.setId("backgroundgame");
-		Label healthLabel = new Label("Health: ");
-		healthLabel.setFont(new Font("Arial", 20));
-		healthLabel.setTextFill(Color.WHITE);
-		healthLabel.toFront();
-		healthBarOutline = new Rectangle(screenSize.getWidth() - 121, 9, 102, 22);
-		healthBarOutline.setFill(Color.TRANSPARENT);
-		healthBarOutline.setStroke(Color.BLACK);
-		lostHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
-		lostHealth.setFill(Color.RED);
-		actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
-		actualHealth.setFill(Color.web("#00F32C"));
-		health = new VBox(10);
-		health.getChildren().addAll(healthLabel);
-		health.setTranslateX(screenSize.getWidth() - 200);
-		health.setTranslateY(10);
-		scoreLabel = new Label("Score: ");
-		scoreLabel.setFont(new Font("Arial", 20));
-		scoreLabel.setTextFill(Color.WHITE);
-		coinAndScore = new VBox(10);
-		coinAndScore.getChildren().addAll(scoreLabel);
-		coinAndScore.setTranslateX(10);
-		coinAndScore.setTranslateY(10);
-		coinAndScore.toBack();
-                
-                //For earth stuff
-                earthHealthBar = new Rectangle(355, 20, 541, 20);
-                earthHealthBar.setFill(Color.TRANSPARENT);
-                earthHealthBar.setStroke(Color.BLACK);
-                earthLostHealth = new Rectangle(356, 21, 540, 19);
-                earthLostHealth.setFill(Color.RED);
-                earthActualHealth = new Rectangle(356, 21, 540, 19);
-                earthActualHealth.setFill(Color.GREEN);
-        }
+    public void createGameRoot() {
+            gameRoot = new Pane();
+            gameRoot.setId("backgroundgame");
+            Label healthLabel = new Label("Health: ");
+            healthLabel.setFont(new Font("Arial", 20));
+            healthLabel.setTextFill(Color.WHITE);
+            healthLabel.toFront();
+            healthBarOutline = new Rectangle(screenSize.getWidth() - 121, 9, 102, 22);
+            healthBarOutline.setFill(Color.TRANSPARENT);
+            healthBarOutline.setStroke(Color.BLACK);
+            lostHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
+            lostHealth.setFill(Color.RED);
+            actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
+            actualHealth.setFill(Color.web("#00F32C"));
+            health = new VBox(10);
+            health.getChildren().addAll(healthLabel);
+            health.setTranslateX(screenSize.getWidth() - 200);
+            health.setTranslateY(10);
+            scoreLabel = new Label("Score: ");
+            scoreLabel.setFont(new Font("Arial", 20));
+            scoreLabel.setTextFill(Color.WHITE);
+            coinAndScore = new VBox(10);
+            coinAndScore.getChildren().addAll(scoreLabel);
+            coinAndScore.setTranslateX(10);
+            coinAndScore.setTranslateY(10);
+            coinAndScore.toBack();
 
-	public void newGame() {
-		player = new Player("file:src/sprites/player.png", 5, 25, 25, (int) screenSize.getWidth(), (int) screenSize.getHeight());
-		earth = new Earth("file:src/sprites/EarthM.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
-		gameRoot.setId("backgroundgame");
-		actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
-		actualHealth.setFill(Color.web("#00F32C"));
-                earthActualHealth = new Rectangle(356, 21, 540, 19);
-                earthActualHealth.setFill(Color.GREEN);
-                gameRoot.getChildren().addAll(player, earth, health, healthBarOutline, lostHealth,
-				actualHealth, coinAndScore, earthActualHealth, earthHealthBar, earthLostHealth);
-		coinAndScore.toFront();
-		scoreLabel.toFront();
-		health.toFront();
-		healthBarOutline.toFront();
-		lostHealth.toFront();
-		actualHealth.toFront();
-                earthHealthBar.toFront();
-                earthLostHealth.toFront();
-                earthActualHealth.toFront();
-		gamePlay = true;
-	}
+            //For earth stuff
+            earthHealthBar = new Rectangle(355, 20, 541, 20);
+            earthHealthBar.setFill(Color.TRANSPARENT);
+            earthHealthBar.setStroke(Color.BLACK);
+            earthLostHealth = new Rectangle(356, 21, 540, 19);
+            earthLostHealth.setFill(Color.RED);
+            earthActualHealth = new Rectangle(356, 21, 540, 19);
+            earthActualHealth.setFill(Color.GREEN);
+    }
+
+    public void newGame() {
+            player = new Player("file:src/sprites/player.png", 5, 25, 25, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+            earth = new Earth("file:src/sprites/EarthM.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+            gameRoot.setId("backgroundgame");
+            actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
+            actualHealth.setFill(Color.web("#00F32C"));
+            earthActualHealth = new Rectangle(356, 21, 540, 19);
+            earthActualHealth.setFill(Color.GREEN);
+            gameRoot.getChildren().addAll(player, earth, health, healthBarOutline, lostHealth,
+                            actualHealth, coinAndScore, earthActualHealth, earthHealthBar, earthLostHealth);
+            coinAndScore.toFront();
+            scoreLabel.toFront();
+            health.toFront();
+            healthBarOutline.toFront();
+            lostHealth.toFront();
+            actualHealth.toFront();
+            earthHealthBar.toFront();
+            earthLostHealth.toFront();
+            earthActualHealth.toFront();
+            gameplay = true;
+    }
+    
+    public void createGameOverRoot() {
+            VBox gameOverBox = addGameOverButtons(stage);
+            gameOverBox.setAlignment(Pos.TOP_CENTER);
+            gameOverRoot = new BorderPane();
+            gameOverRoot.setId("menu");
+            gameOverRoot.setCenter(gameOverBox);
+            exitRoot = new VBox(20);
+            Label exitString = new Label("Are you sure you want to exit?");
+            exitString.setFont(Font.font("Arial", 25));
+            HBox exitButtons = new HBox(10);
+            exitButtons.getChildren().addAll(yesExit, noExit);
+            exitButtons.setAlignment(Pos.CENTER);
+            exitRoot.getChildren().addAll(exitString, exitButtons);
+            exitRoot.setId("menu");
+            exitRoot.setAlignment(Pos.CENTER);
+    }
+
+    public VBox addGameOverButtons(Stage stage) {
+            VBox vbox = new VBox();
+            vbox.setPadding(new Insets(20));
+            vbox.setSpacing(10);
+
+            Button exitBtn = new Button("QUIT");
+            exitBtn.setOnAction(e -> {
+                    stage.getScene().setRoot(exitRoot);
+
+                    yesExit.setOnAction(eY -> {
+                            Platform.exit();
+                            gameplay = false;
+                            clearAll();
+                    });
+                    noExit.setOnAction(eN -> {
+                            stage.getScene().setRoot(gameOverRoot);
+                    });
+            });
+
+            vbox.getChildren().addAll(exitBtn);
+            return vbox;
+    }
+
+    public void clearAll() {
+            projectiles.clear();
+            projectilesToRemove.clear();
+            debrisToRemove.clear();
+            debris.clear();
+            scoreLabel.setText("Score: ");
+            gameRoot.getChildren().clear();
+    }
 }
