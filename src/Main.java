@@ -161,6 +161,7 @@ public class Main extends Application {
             Debris newdebris = new Debris("file:src/sprites/rocket.png", randX, randY, 3, 1, 50, 50, screenSize);
             gameRoot.getChildren().add(newdebris);
             debris.add(newdebris);
+            newdebris.toBack();
 	}
 
 	public void updateDebris(Debris debri) {
@@ -302,6 +303,11 @@ public class Main extends Application {
             earthLostHealth.toFront();
             earthActualHealth.toFront();
             gameplay = true;
+            
+            //Collision rectangle additions
+            gameRoot.getChildren().addAll(earth.middle, earth.left, earth.right);
+            
+            
     }
     
     public void createGameOverRoot() {
