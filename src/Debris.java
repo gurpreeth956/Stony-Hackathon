@@ -135,7 +135,12 @@ public class Debris extends Pane {
 	}
 
 	public boolean isEarthColliding(Earth earth) {
-		return this.getBoundsInParent().intersects(earth.getBoundsInParent());
-
+            boolean colliding = false;
+            for (Rectangle rect : earth.collisionRects) {
+		if (this.getBoundsInParent().intersects(rect.getBoundsInParent())) {
+                    colliding = true;
+                }
+            }
+            return colliding;
 	}
 }

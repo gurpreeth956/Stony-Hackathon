@@ -1,4 +1,3 @@
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -346,28 +345,6 @@ public class Main extends Application {
 		earthActualHealth.setFill(Color.GREEN);
 	}
 
-	public void newGame() {
-		player = new Player("file:src/sprites/player.png", 5, 25, 25, (int) screenSize.getWidth(), (int) screenSize.getHeight());
-		earth = new Earth("file:src/sprites/EarthM.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
-		gameRoot.setId("backgroundgame");
-		actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
-		actualHealth.setFill(Color.web("#00F32C"));
-		earthActualHealth = new Rectangle(356, 21, 540, 19);
-		earthActualHealth.setFill(Color.GREEN);
-		gameRoot.getChildren().addAll(player, earth, health, healthBarOutline, lostHealth,
-				actualHealth, coinAndScore, earthActualHealth, earthHealthBar, earthLostHealth);
-		coinAndScore.toFront();
-		scoreLabel.toFront();
-		health.toFront();
-		healthBarOutline.toFront();
-		lostHealth.toFront();
-		actualHealth.toFront();
-		earthHealthBar.toFront();
-		earthLostHealth.toFront();
-		earthActualHealth.toFront();
-		gameplay = true;
-	}
-
 	public void createGameOverRoot() {
 		VBox gameOverBox = addGameOverButtons(stage);
 		gameOverBox.setAlignment(Pos.TOP_CENTER);
@@ -416,4 +393,29 @@ public class Main extends Application {
 		scoreLabel.setText("Score: ");
 		gameRoot.getChildren().clear();
 	}
+    public void newGame() {
+            player = new Player("file:src/sprites/player.png", 5, 25, 25, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+            earth = new Earth("file:src/sprites/EarthM.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+            gameRoot.setId("backgroundgame");
+            actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
+            actualHealth.setFill(Color.web("#00F32C"));
+            earthActualHealth = new Rectangle(356, 21, 540, 19);
+            earthActualHealth.setFill(Color.GREEN);
+            gameRoot.getChildren().addAll(player, earth, health, healthBarOutline, lostHealth,
+                            actualHealth, coinAndScore, earthActualHealth, earthHealthBar, earthLostHealth);
+            coinAndScore.toFront();
+            scoreLabel.toFront();
+            health.toFront();
+            healthBarOutline.toFront();
+            lostHealth.toFront();
+            actualHealth.toFront();
+            earthHealthBar.toFront();
+            earthLostHealth.toFront();
+            earthActualHealth.toFront();
+            gameplay = true;
+            
+            //Collision rectangle additions
+            gameRoot.getChildren().addAll(earth.middle, earth.left, earth.right);
+            
+    }
 }

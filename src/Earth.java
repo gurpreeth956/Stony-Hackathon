@@ -1,4 +1,6 @@
 
+import java.util.ArrayList;
+import java.util.List;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -27,6 +29,9 @@ public class Earth extends Pane {
 	public boolean alive = true;
 	public int health;
 	public int totalHealth;
+        
+        public List<Rectangle> collisionRects;
+        public Rectangle middle, left, right;
 
 	public Earth(String img, int health, int width, int height, int screenWidth, int screenHeight) {
 		Image earthImage = new Image(img);
@@ -56,6 +61,17 @@ public class Earth extends Pane {
                 actualHealth = new Rectangle(356, 21, 540, 19);
                 actualHealth.setFill(Color.GREEN);
                 actualHealth.toFront();
+                
+                collisionRects = new ArrayList();
+                middle = new Rectangle(this.getTranslateX() + 37, this.getTranslateY() + 10, 87, 140);
+                middle.setFill(Color.TRANSPARENT);
+                left = new Rectangle(this.getTranslateX() + 9, this.getTranslateY() + 37, 30, 86);
+                left.setFill(Color.TRANSPARENT);
+                right = new Rectangle(this.getTranslateX() + 121, this.getTranslateY() + 37, 30, 86);
+                right.setFill(Color.TRANSPARENT);
+                collisionRects.add(middle);
+                collisionRects.add(left);
+                collisionRects.add(right);
 	}
 
 	public void setPosition() {
