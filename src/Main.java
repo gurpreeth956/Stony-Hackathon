@@ -21,7 +21,7 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 public class Main extends Application {
-
+    int count = 0;
     Stage stage;
     Scene scene;
     static Pane gameRoot;

@@ -9,9 +9,10 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
+
 public class Debris extends Pane {
 
-    //Create damage variable for player hit??
+    //Create damage variable for player hit?
     public ImageView iv;
     int offsetX = 0;
     int offsetY = 0;
@@ -25,6 +26,9 @@ public class Debris extends Pane {
     
     public double xdist;
     public double ydist;
+    public double[] xpoints;
+    public double[] ypoints;
+    public int pointer = 0;
 
     public Rectangle healthBarOutline;
     public Rectangle actualHealth;
@@ -41,7 +45,8 @@ public class Debris extends Pane {
             this.setTranslateY(y);
             this.x = x;
             this.y = y;
-            calcDistances(screenSize);
+            //calcDistances(screenSize);
+            linepoints(screenSize, 350);
             Image enemyImage = new Image(img);
             ImageView enemyIV = new ImageView(enemyImage);
             this.iv = enemyIV;
@@ -70,27 +75,35 @@ public class Debris extends Pane {
 
    public void move(Rectangle2D screenSize) { //note width and height here are screen size
 		//Create equation to make 
-            double centerx = screenSize.getWidth()/2;
+            /*double centerx = screenSize.getWidth()/2;
             double centery = screenSize.getHeight()/2;
             if(x + 80 <= centerx && y + 80 <= centery){ //quad 2
-                moveX(xdist/ydist, ydist/xdist);
-                moveY(ydist/xdist, xdist/ydist);
+                moveX(xdist/ydist, xspeed);
+                moveY(ydist/xdist, yspeed);
             }
             if(x + 80 > centerx && y + 80 <= centery){ //quad 1
-                moveX(xdist/ydist, -1*(ydist/xdist));
-                moveY(ydist/xdist, xdist/ydist);
+                moveX(xdist/ydist, -1*xspeed);
+                moveY(ydist/xdist, yspeed);
             }
             if(x + 80 <= centerx && y + 80 > centery){ //quad 3
-                moveX(xdist/ydist, ydist/xdist);
-                moveY(ydist/xdist, -1*(xdist/ydist));
+                moveX(xdist/ydist, xspeed);
+                moveY(ydist/xdist, -1*yspeed);
             }
             if(x + 80 > centerx && y + 80 > centery){ //quad 4
-                moveX(xdist/ydist, -1*(ydist/xdist));
-                moveY(ydist/xdist, -1*(xdist/ydist));
+                moveX(xdist/ydist, -1*xspeed);
+                moveY(ydist/xdist, -1*xspeed);
             }
+            calcDistances(screenSize);*/
+            if(pointer < xpoints.length){
+                this.setTranslateX(xpoints[pointer]);
+                this.setTranslateY(ypoints[pointer]);
+                pointer++;
+            }
+                
+                
 	}
    
-           public void moveX(double x, double xspeed) { //x is horizontal speed
+        /*   public void moveX(double x, double xspeed) { //x is horizontal speed
             for(double i = 0; i < x; i++){
                 this.setTranslateX(this.getTranslateX()+xspeed);
                 this.x += xspeed;
@@ -115,6 +128,57 @@ public class Debris extends Pane {
                 ydist = centery - y + 80;
             else
                 ydist = y + 80 - centery;
+            if(xdist/ydist == 1){
+                xspeed = 1.0;
+                yspeed = 1.0;
+            }
+            else if(xdist > ydist){
+                xspeed = ydist/xdist;
+                yspeed = xdist/ydist;
+            }
+            else{
+                xspeed = xdist/ydist;
+                yspeed = ydist/xdist;
+            }
+        }*/
+        
+        public void linepoints(Rectangle2D screenSize, int speed){
+            xpoints = new double[speed];
+            ypoints = new double[speed];
+            double centerx = screenSize.getWidth()/2;
+            double centery = screenSize.getHeight()/2;
+            double xinc;
+            double yinc;
+            if(x + 80 <= centerx)
+                xinc = (centerx - x + 80)/speed;
+            else
+                xinc = (x + 80 - centerx)/speed;
+            if(y + 80 <= centery)
+                yinc = (centery - y + 80)/speed;
+            else
+                yinc = (y + 80 - centery)/speed;
+            double tempx = x;
+            double tempy = y;
+            for(int i = 0; i < speed; i++){
+                xpoints[i] = tempx;
+                ypoints[i] = tempy;
+                if(x + 80 <= centerx && y + 80 <= centery){ //quad 2
+                    tempx += xinc;
+                    tempy += yinc;
+                }
+                if(x + 80 > centerx && y + 80 <= centery){ //quad 1
+                    tempx -= xinc;
+                    tempy += yinc;
+                }
+                if(x + 80 <= centerx && y + 80 > centery){ //quad 3
+                    tempx += xinc;
+                    tempy -= yinc;
+                }
+                if(x + 80 > centerx && y + 80 > centery){ //quad 4
+                   tempx -= xinc;
+                   tempy -= yinc;
+                }
+            }
         }
 
 	
