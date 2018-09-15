@@ -1,13 +1,14 @@
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -20,12 +21,17 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.scene.media.AudioClip;
+import static javafx.scene.media.AudioClip.INDEFINITE;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import jdk.nashorn.internal.parser.Scanner;
 
 public class Main extends Application {
 
@@ -74,6 +80,22 @@ public class Main extends Application {
 		scene = new Scene(menuRoot, screenSize.getWidth(), screenSize.getHeight());
 		scene.getStylesheets().addAll(this.getClass().getResource("Design.css").toExternalForm());
 
+		final Task task = new Task() {
+			@Override
+			protected Object call() throws Exception {
+				int s = INDEFINITE;
+				AudioClip audio = new AudioClip(getClass().getResource("sprites/gamemusic.wav").toExternalForm());
+				audio.setVolume(0.5f);
+				audio.setCycleCount(s);
+				audio.play();
+				return null;
+			}
+		};
+		Thread thread = new Thread(task);
+		thread.start();
+
+		/*AudioClip note = new AudioClip(this.getClass().getResource("sprites/gamemusic.wav").toString());
+                note.play();*/
 		createGameRoot();
 		createGameOverRoot();
 		createHowRoot();
@@ -196,7 +218,7 @@ public class Main extends Application {
 			randX = (Math.random() * (screenSize.getWidth() + 160) - 160);
 		}
 
-		Debris newdebris = new Debris("file:src/sprites/rocket.png", randX, randY, 3, 1, 50, 50, screenSize);
+		Debris newdebris = new Debris("file:src/sprites/Asteroid.png", randX, randY, 3, 1, 50, 50, screenSize);
 		gameRoot.getChildren().add(newdebris);
 		debris.add(newdebris);
 	}
@@ -249,7 +271,7 @@ public class Main extends Application {
 		}
 
 		Astronaut astronaut = new Astronaut("file:src/sprites/Astronaut.png", randX, randY, 3, 1, 50, 50, screenSize);
-		gameRoot.getChildren().add(astronaut);
+		gameRoot.getChildren().addAll(astronaut, astronaut.middle);
 		astronauts.add(astronaut);
 	}
 
@@ -267,6 +289,8 @@ public class Main extends Application {
 		if (!astro.isAlive()) {
 			gameRoot.getChildren().remove(astro);
 			astronautsToRemove.add(astro);
+			astro.updateHit();
+			astro.middle.toFront();
 		}
 	}
 
@@ -391,9 +415,10 @@ public class Main extends Application {
 	}
 
 	public void createScoreRoot() throws FileNotFoundException {
+		/*
 		scoreRoot = new BorderPane();
 		Text scoreTitle = new Text("High Scores");
-		File file = new File("C:\\Users\\rhuan\\OneDrive\\Documents\\GitHub\\Stony-Hackathon\\src\\HighScores.txt");
+		File file = new File("file:src/HighScores.txt");
 		Scanner scan = new Scanner(file);
 		VBox scoreBox = new VBox(10);
 		while (scan.hasNextLine()) {
@@ -413,7 +438,7 @@ public class Main extends Application {
 			BorderPane.setAlignment(menuBox, Pos.CENTER);
 		});
 		scoreRoot.setBottom(backBtn);
-		BorderPane.setAlignment(backBtn, Pos.BOTTOM_CENTER);
+		BorderPane.setAlignment(backBtn, Pos.BOTTOM_CENTER);*/
 	}
 
 	public void createGameOverRoot() {
@@ -474,7 +499,7 @@ public class Main extends Application {
 
 	public void newGame() {
 		player = new Player("file:src/sprites/player.png", 5, 25, 25, (int) screenSize.getWidth(), (int) screenSize.getHeight());
-		earth = new Earth("file:src/sprites/EarthM.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+		earth = new Earth("file:src/sprites/Earth.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
 		gameRoot.setId("backgroundgame");
 		actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
 		actualHealth.setFill(Color.web("#00F32C"));
@@ -497,4 +522,5 @@ public class Main extends Application {
 		gameRoot.getChildren().addAll(earth.middle, earth.left, earth.right);
 
 	}
+
 }

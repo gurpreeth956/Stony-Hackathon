@@ -1,6 +1,7 @@
 
 import java.util.ArrayList;
 import java.util.List;
+import javafx.animation.Animation;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -9,6 +10,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
+import javafx.util.Duration;
 
 public class Earth extends Pane {
 
@@ -22,24 +24,26 @@ public class Earth extends Pane {
 	int screenWidth;
 	int screenHeight;
 
-	public static Rectangle healthBarOutline;
-	public static Rectangle actualHealth;
-	public static Rectangle lostHealth;
-        public static Label nameLabel;
 	public boolean alive = true;
 	public int health;
 	public int totalHealth;
         
         public List<Rectangle> collisionRects;
         public Rectangle middle, left, right;
+        
+        SpriteAnimation earth;
+        private final int count = 10;
+        private final int columns = 5;
+        private final Duration duration = Duration.millis(1400);
+        private final Animation animation;
 
 	public Earth(String img, int health, int width, int height, int screenWidth, int screenHeight) {
-		Image earthImage = new Image(img);
-		ImageView earthIV = new ImageView(earthImage);
-		this.iv = earthIV;
-		this.iv.setViewport(new Rectangle2D(offsetX, offsetY, width, height));
 		this.health = health;
 		this.totalHealth = health;
+                earth = new SpriteAnimation(img, count, columns, offsetX, offsetY, width, height, duration); 
+                this.iv = earth.getIV();
+                animation = earth;
+                animation.play();
                 this.getChildren().addAll(iv);
 
 		this.width = width;
@@ -47,20 +51,6 @@ public class Earth extends Pane {
 		this.screenWidth = screenWidth;
 		this.screenHeight = screenHeight;
 		setPosition();
-                
-                nameLabel = new Label("EARTH");
-                nameLabel.setFont(new Font("Arial", 25));
-                nameLabel.setTextFill(Color.WHITE);
-                nameLabel.setTranslateX(10);
-                nameLabel.setTranslateY(700);
-                healthBarOutline = new Rectangle(355, 20, 541, 20);
-                healthBarOutline.setFill(Color.TRANSPARENT);
-                healthBarOutline.setStroke(Color.BLACK);
-                lostHealth = new Rectangle(356, 21, 540, 19);
-                lostHealth.setFill(Color.RED);
-                actualHealth = new Rectangle(356, 21, 540, 19);
-                actualHealth.setFill(Color.GREEN);
-                actualHealth.toFront();
                 
                 collisionRects = new ArrayList();
                 middle = new Rectangle(this.getTranslateX() + 37, this.getTranslateY() + 10, 87, 140);
@@ -83,8 +73,6 @@ public class Earth extends Pane {
 
 	public void hit() {
 		health--;
-                actualHealth = new Rectangle(356, 21, health * (540 / this.totalHealth), 19);
-                actualHealth.setFill(Color.GREEN);
 	}
 
 	public int getX() {
