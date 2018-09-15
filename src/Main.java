@@ -16,7 +16,6 @@ public class Main extends Application {
     static Pane gameRoot;
     static BorderPane menuRoot;
     
-    
     static Rectangle2D screenSize = Screen.getPrimary().getVisualBounds();
     
     public static void main(String[] args) {
