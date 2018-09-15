@@ -17,11 +17,14 @@ public class Debris extends Pane {
     int offsetY = 0;
     int width;
     int height;
-    public int x; //Enemy xPos
-    public int y; //Enemy yPos
+    public double x; //Enemy xPos
+    public double y; //Enemy yPos
     int coin;
     int score;
     int enemySpeed;
+    
+    public double xdist;
+    public double ydist;
 
     public Rectangle healthBarOutline;
     public Rectangle actualHealth;
@@ -33,7 +36,12 @@ public class Debris extends Pane {
     //currently used only for bosses
     public Label nameLabel;
 
-    public Debris(String img, int health, int coin, int width, int height) {
+    public Debris(String img, double x, double y,int health, int coin, int width, int height, Rectangle2D screenSize) {
+            this.setTranslateX(x);
+            this.setTranslateY(y);
+            this.x = x;
+            this.y = y;
+            calcDistances(screenSize);
             Image enemyImage = new Image(img);
             ImageView enemyIV = new ImageView(enemyImage);
             this.iv = enemyIV;
@@ -60,10 +68,55 @@ public class Debris extends Pane {
             this.iv.setViewport(new Rectangle2D(offsetX, offsetY, width, height));
     }
 
-    public void move(Character player, double width, double height) { //note width and height here are screen size
-            //Create equation to make 
-
+   public void move(Rectangle2D screenSize) { //note width and height here are screen size
+		//Create equation to make 
+            double centerx = screenSize.getWidth()/2;
+            double centery = screenSize.getHeight()/2;
+            if(x + 80 <= centerx && y + 80 <= centery){ //quad 2
+                moveX(xdist/ydist, ydist/xdist);
+                moveY(ydist/xdist, xdist/ydist);
+            }
+            if(x + 80 > centerx && y + 80 <= centery){ //quad 1
+                moveX(xdist/ydist, -1*(ydist/xdist));
+                moveY(ydist/xdist, xdist/ydist);
+            }
+            if(x + 80 <= centerx && y + 80 > centery){ //quad 3
+                moveX(xdist/ydist, ydist/xdist);
+                moveY(ydist/xdist, -1*(xdist/ydist));
+            }
+            if(x + 80 > centerx && y + 80 > centery){ //quad 4
+                moveX(xdist/ydist, -1*(ydist/xdist));
+                moveY(ydist/xdist, -1*(xdist/ydist));
+            }
 	}
+   
+           public void moveX(double x, double xspeed) { //x is horizontal speed
+            for(double i = 0; i < x; i++){
+                this.setTranslateX(this.getTranslateX()+xspeed);
+                this.x += xspeed;
+            }
+        }
+    
+        public void moveY(double y,double yspeed) { //y is vertical speed
+            for(double i = 0; i < y; i++){
+                this.setTranslateY(this.getTranslateY()+yspeed);
+                this.y += yspeed;
+            }
+        }
+        
+        public void calcDistances(Rectangle2D screenSize){
+            double centerx = screenSize.getWidth()/2;
+            double centery = screenSize.getHeight()/2;
+            if(x + 80 <= centerx)
+                xdist = centerx - x + 80;
+            else
+                xdist = x + 80 - centerx;
+            if(y + 80 <= centery)
+                ydist = centery - y + 80;
+            else
+                ydist = y + 80 - centery;
+        }
+
 	
 	public void setAlive(boolean alive){
 		this.alive = alive;
@@ -74,7 +127,12 @@ public class Debris extends Pane {
 	}
 	
 	public boolean isColliding(Player player){
-		return this.getBoundsInParent().intersects(player.getBoundsInParent());
+            return this.getBoundsInParent().intersects(player.getBoundsInParent());
 	}
+        
+        public boolean isEarthColliding(Earth earth){
+           return this.getBoundsInParent().intersects(earth.getBoundsInParent());
+
+        }
 
 }
