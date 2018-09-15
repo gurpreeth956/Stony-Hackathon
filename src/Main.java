@@ -1,3 +1,4 @@
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URL;
@@ -15,6 +16,8 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.BorderPane;
@@ -31,6 +34,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class Main extends Application {
 
@@ -53,7 +57,7 @@ public class Main extends Application {
 
 	static Rectangle healthBarOutline, actualHealth, lostHealth; //for player
 	static Rectangle earthHealthBar, earthActualHealth, earthLostHealth; //for earth
-	Label scoreLabel;
+	Label scoreLabel, plusOne, minusOne;
 	VBox health, coinAndScore;
 
 	private List<Projectile> projectiles = new ArrayList();
@@ -78,32 +82,33 @@ public class Main extends Application {
 		menuRoot = new BorderPane();
 		scene = new Scene(menuRoot, screenSize.getWidth(), screenSize.getHeight());
 		scene.getStylesheets().addAll(this.getClass().getResource("Design.css").toExternalForm());
-                
-                final Task task = new Task() {
-                    @Override
-                    protected Object call() throws Exception {
-                        int s = INDEFINITE;
-                        AudioClip audio = new AudioClip(getClass().getResource("sprites/gamemusic.wav").toExternalForm());
-                        audio.setVolume(0.5f);
-                        audio.setCycleCount(s);
-                        audio.play();
-                        return null;
-                    }
-                };
-                Thread thread = new Thread(task);
-                thread.start();
-                
-                /*AudioClip note = new AudioClip(this.getClass().getResource("sprites/gamemusic.wav").toString());
-                note.play();*/
 
+		final Task task = new Task() {
+			@Override
+			protected Object call() throws Exception {
+				int s = INDEFINITE;
+				AudioClip audio = new AudioClip(getClass().getResource("sprites/gamemusic.wav").toExternalForm());
+				audio.setVolume(0.5f);
+				audio.setCycleCount(s);
+				audio.play();
+				return null;
+			}
+		};
+		Thread thread = new Thread(task);
+		thread.start();
+
+		/*AudioClip note = new AudioClip(this.getClass().getResource("sprites/gamemusic.wav").toString());
+                note.play();*/
 		createGameRoot();
 		createGameOverRoot();
 		createHowRoot();
 		createScoreRoot();
-                createPauseRoot();
+		createPauseRoot();
 		scene.setOnKeyPressed(e -> keys.put(e.getCode(), true));
 		scene.setOnKeyReleased(e -> keys.put(e.getCode(), false));
 
+		plusOne = new Label("+1");
+		minusOne = new Label("-1");
 		Button startBtn = new Button("Start");
 		startBtn.setOnAction(e -> {
 			stage.getScene().setRoot(gameRoot);
@@ -159,10 +164,11 @@ public class Main extends Application {
 		stage.show();
 	}
 
-        long pauseTime = 0;
+	long pauseTime = 0;
+
 	public void update(Stage stage) {
-            long timeNow = System.currentTimeMillis();
-            long time = timeNow - pauseTime;
+		long timeNow = System.currentTimeMillis();
+		long time = timeNow - pauseTime;
 		if (gameplay) {
 			if (player.getHealth() == 0 || earth.getHealth() == 0) {
 				Text gameOver = new Text("Game Over \n Score:  " + player.getScore());
@@ -197,25 +203,24 @@ public class Main extends Application {
 			for (Astronaut astro : astronauts) {
 				updateAstronaut(astro);
 			}
-                        
-                        if (time < 0 || time > 250) {
-                            if (isPressed(KeyCode.ESCAPE)) {
-                                gameplay = false;
-                                stage.getScene().setRoot(pauseRoot);
-                            }
-                            pauseTime = timeNow;
-                        }
+
+			if (time < 0 || time > 250) {
+				if (isPressed(KeyCode.ESCAPE)) {
+					gameplay = false;
+					stage.getScene().setRoot(pauseRoot);
+				}
+				pauseTime = timeNow;
+			}
 			clearLists();
+		} else {
+			if (time < 0 || time > 250) {
+				if (isPressed(KeyCode.ESCAPE)) {
+					gameplay = true;
+					stage.getScene().setRoot(gameRoot);
+				}
+				pauseTime = timeNow;
+			}
 		}
-                else {
-                    if (time < 0 || time > 250) {
-                        if (isPressed(KeyCode.ESCAPE)) {
-                                gameplay = true;
-                                stage.getScene().setRoot(gameRoot);
-                        }
-                        pauseTime = timeNow;
-                    }
-                }
 	}
 
 	public void createDebris() {
@@ -310,8 +315,8 @@ public class Main extends Application {
 		if (!astro.isAlive()) {
 			gameRoot.getChildren().remove(astro);
 			astronautsToRemove.add(astro);
-                        astro.updateHit();
-                        astro.middle.toFront();
+			astro.updateHit();
+			astro.middle.toFront();
 		}
 	}
 
@@ -461,9 +466,9 @@ public class Main extends Application {
 			clearAll();
 			newGame();
 		});
-                
-                Button backToMenu = new Button("BACK TO MENU");
-                backToMenu.setOnAction(e -> {
+
+		Button backToMenu = new Button("BACK TO MENU");
+		backToMenu.setOnAction(e -> {
 			stage.getScene().setRoot(menuRoot);
 			clearAll();
 			newGame();
@@ -472,109 +477,146 @@ public class Main extends Application {
 		vbox.getChildren().addAll(exitBtn, newBtn, backToMenu);
 		return vbox;
 	}
-        
-        boolean alreadyStarted = false;
-    public void newGame() {
-        if (alreadyStarted) {
-            gameRoot.getChildren().removeAll(player, earth, health, healthBarOutline, lostHealth,
-                            actualHealth, coinAndScore, earthActualHealth, earthHealthBar, earthLostHealth);
-        }
-            player = new Player("file:src/sprites/player.png", 5, 25, 25, (int) screenSize.getWidth(), (int) screenSize.getHeight());
-            earth = new Earth("file:src/sprites/Earth.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
-            gameRoot.setId("backgroundgame");
-            actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
-            actualHealth.setFill(Color.web("#00F32C"));
-            earthActualHealth = new Rectangle(356, 21, 540, 19);
-            earthActualHealth.setFill(Color.GREEN);
-            gameRoot.getChildren().addAll(player, earth, health, healthBarOutline, lostHealth,
-                            actualHealth, coinAndScore, earthActualHealth, earthHealthBar, earthLostHealth);
-            coinAndScore.toFront();
-            scoreLabel.toFront();
-            health.toFront();
-            healthBarOutline.toFront();
-            lostHealth.toFront();
-            actualHealth.toFront();
-            earthHealthBar.toFront();
-            earthLostHealth.toFront();
-            earthActualHealth.toFront();
-            gameplay = true;
-            alreadyStarted = true;
-            
-            //Collision rectangle additions
-            gameRoot.getChildren().addAll(earth.middle, earth.left, earth.right);
-            
-    }
-   
-    public void createHowRoot() {
-            howRoot = new BorderPane();
-            Text howText = new Text("Use arrow keys to move shuttle and space bar to shoot. Destroy the asteroids and save the astronauts.");
-            howText.setFont(Font.font("Arial", 20));
-            howRoot.setCenter(howText);
-            BorderPane.setAlignment(howText, Pos.CENTER);
-            BorderPane.setMargin(howText, new Insets(10));
-            Button backBtn = new Button("BACK TO MENU");
-            backBtn.setOnAction(e -> {
-                    stage.getScene().setRoot(menuRoot);
-                    BorderPane.setAlignment(menuBox, Pos.CENTER);
-            });
-            howRoot.setBottom(backBtn);
-            BorderPane.setAlignment(backBtn, Pos.BOTTOM_CENTER);
-            BorderPane.setMargin(backBtn, new Insets(50));
-    }
-    
-    public void createPauseRoot() {
-        pauseRoot = new BorderPane();
-        VBox vbox = new VBox();
-            vbox.setPadding(new Insets(20));
-            vbox.setSpacing(10);
 
-            Button exitBtn = new Button("QUIT");
-            exitBtn.setOnAction(e -> {
-                    stage.getScene().setRoot(exitRoot);
+	boolean alreadyStarted = false;
 
-                    yesExit.setOnAction(eY -> {
-                            Platform.exit();
-                            gameplay = false;
-                            clearAll();
-                    });
-                    noExit.setOnAction(eN -> {
-                            stage.getScene().setRoot(gameOverRoot);
-                    });
-            });
+	public void newGame() {
+		if (alreadyStarted) {
+			gameRoot.getChildren().removeAll(player, earth, health, healthBarOutline, lostHealth,
+					actualHealth, coinAndScore, earthActualHealth, earthHealthBar, earthLostHealth);
+		}
+		player = new Player("file:src/sprites/player.png", 5, 25, 25, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+		earth = new Earth("file:src/sprites/Earth.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+		gameRoot.setId("backgroundgame");
+		actualHealth = new Rectangle(screenSize.getWidth() - 120, 10, 100, 22);
+		actualHealth.setFill(Color.web("#00F32C"));
+		earthActualHealth = new Rectangle(356, 21, 540, 19);
+		earthActualHealth.setFill(Color.GREEN);
+		gameRoot.getChildren().addAll(player, earth, health, healthBarOutline, lostHealth,
+				actualHealth, coinAndScore, earthActualHealth, earthHealthBar, earthLostHealth);
+		coinAndScore.toFront();
+		scoreLabel.toFront();
+		health.toFront();
+		healthBarOutline.toFront();
+		lostHealth.toFront();
+		actualHealth.toFront();
+		earthHealthBar.toFront();
+		earthLostHealth.toFront();
+		earthActualHealth.toFront();
+		gameplay = true;
+		alreadyStarted = true;
 
-            Button newBtn = new Button("NEW GAME");
-            newBtn.setOnAction(e -> {
-                    stage.getScene().setRoot(gameRoot);
-                    clearAll();
-                    newGame();
-            });
+		//Collision rectangle additions
+		gameRoot.getChildren().addAll(earth.middle, earth.left, earth.right);
 
-            Button backToMenu = new Button("BACK TO MENU");
-            backToMenu.setOnAction(e -> {
-                    stage.getScene().setRoot(menuRoot);
-                    gameplay = false;
-                    clearAll();
-                    newGame();
-            });
-            
-            Button resume = new Button("RESUME");
-            resume.setOnAction(e -> {
-                stage.getScene().setRoot(gameRoot);
-                gameplay = true;
-            });
+	}
 
-            vbox.getChildren().addAll(resume, backToMenu, newBtn, exitBtn);
-            
-            Text title = new Text("PAUSE MENU");
+	public void createHowRoot() {
+		Text title = new Text("How To Play");
+		title.setFont(Font.font("Arial", 40));
+		BorderPane.setAlignment(title, Pos.TOP_CENTER);
+		howRoot = new BorderPane();
+		VBox howBox = createHowBox();
+		howBox.setAlignment(Pos.CENTER);
+		howRoot.setCenter(howBox);
+		howRoot.setTop(title);
+		BorderPane.setAlignment(howBox,Pos.CENTER);
+		Button backBtn = new Button("BACK TO MENU");
+		backBtn.setOnAction(e -> {
+			stage.getScene().setRoot(menuRoot);
+			BorderPane.setAlignment(menuBox, Pos.CENTER);
+		});
+		howRoot.setBottom(backBtn);
+		BorderPane.setAlignment(backBtn, Pos.BOTTOM_CENTER);
+		BorderPane.setMargin(backBtn, new Insets(50));
+	}
+	
+	public VBox createHowBox(){
+		VBox controls = new VBox();
+		Image arrowImage = new Image("file:src/sprites/ArrowKeys.png");
+		ImageView arrowIV = new ImageView(arrowImage);
+		Text arrowText = new Text("Use the arrowkeys to move the player");
+		arrowText.setFont(Font.font("Arial", 20));
+		HBox arrowBox = new HBox(arrowIV, arrowText);
+		arrowBox.setAlignment(Pos.CENTER);
+		Image barImage = new Image("file:src/sprites/SpaceBar.png");
+		ImageView barIV = new ImageView(barImage);
+		Text barText = new Text("Use the spacebar to shoot");
+		barText.setFont(Font.font("Arial", 20));
+		HBox barBox = new HBox(barIV, barText);
+		barBox.setAlignment(Pos.CENTER);
+		Image asteroidImage = new Image("file:src/sprites/ControlAsteroid.png");
+		ImageView asteroidIV = new ImageView(asteroidImage);
+		Text asteroidText = new Text("\n\nHit the asteroids before they reach the Earth");
+		asteroidText.setFont(Font.font("Arial", 20));
+		HBox asteroidBox = new HBox(asteroidIV, asteroidText);
+		asteroidBox.setAlignment(Pos.CENTER);
+		Image astroImage = new Image("file:src/sprites/ControlAstronaut.png");
+		ImageView astroIV = new ImageView(astroImage);
+		Text astroText = new Text("\n\nSave the astronauts by catching them");
+		astroText.setFont(Font.font("Arial", 20));
+		HBox astroBox = new HBox(astroIV, astroText);
+		astroBox.setAlignment(Pos.CENTER);
+		controls.getChildren().addAll(arrowBox, barBox, asteroidBox, astroBox);
+		controls.setAlignment(Pos.CENTER);
+		BorderPane.setAlignment(controls, Pos.CENTER);
+		return controls;
+	}
+
+	public void createPauseRoot() {
+		pauseRoot = new BorderPane();
+		VBox vbox = new VBox();
+		vbox.setPadding(new Insets(20));
+		vbox.setSpacing(10);
+
+		Button exitBtn = new Button("QUIT");
+		exitBtn.setOnAction(e -> {
+			stage.getScene().setRoot(exitRoot);
+
+			yesExit.setOnAction(eY -> {
+				Platform.exit();
+				gameplay = false;
+				clearAll();
+			});
+			noExit.setOnAction(eN -> {
+				stage.getScene().setRoot(gameOverRoot);
+			});
+		});
+
+		Button newBtn = new Button("NEW GAME");
+		newBtn.setOnAction(e -> {
+			stage.getScene().setRoot(gameRoot);
+			clearAll();
+			newGame();
+		});
+
+		Button backToMenu = new Button("BACK TO MENU");
+		backToMenu.setOnAction(e -> {
+			stage.getScene().setRoot(menuRoot);
+			gameplay = false;
+			clearAll();
+			newGame();
+		});
+
+		Button resume = new Button("RESUME");
+		resume.setOnAction(e -> {
+			stage.getScene().setRoot(gameRoot);
+			gameplay = true;
+		});
+
+		vbox.getChildren().addAll(resume, backToMenu, newBtn, exitBtn);
+
+		Text title = new Text("PAUSE MENU");
 		title.setFont(Font.font("Arial", 50));
-                
-            pauseRoot.setTop(title);
-            pauseRoot.setCenter(vbox);
-            BorderPane.setAlignment(vbox, Pos.TOP_CENTER);
-            
-            BorderPane.setAlignment(title, Pos.TOP_CENTER);
-            BorderPane.setMargin(title, new Insets(100));
-    }
+
+		vbox.setAlignment(Pos.CENTER);
+		pauseRoot.setTop(title);
+		pauseRoot.setCenter(vbox);
+		BorderPane.setAlignment(vbox, Pos.TOP_CENTER);
+
+		BorderPane.setAlignment(title, Pos.TOP_CENTER);
+		BorderPane.setMargin(title, new Insets(100));
+	}
 
 	public void createScoreRoot() throws FileNotFoundException {
 		/*scoreRoot = new BorderPane();
@@ -601,8 +643,6 @@ public class Main extends Application {
 		scoreRoot.setBottom(backBtn);
 		BorderPane.setAlignment(backBtn, Pos.BOTTOM_CENTER);*/
 	}
-        
-	
 
 	public void clearAll() {
 		projectiles.clear();
