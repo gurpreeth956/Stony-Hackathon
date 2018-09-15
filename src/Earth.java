@@ -34,7 +34,7 @@ public class Earth extends Pane {
         SpriteAnimation earth;
         private final int count = 10;
         private final int columns = 5;
-        private final Duration duration = Duration.millis(1200);
+        private final Duration duration = Duration.millis(1400);
         private final Animation animation;
 
 	public Earth(String img, int health, int width, int height, int screenWidth, int screenHeight) {
