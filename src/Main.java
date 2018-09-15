@@ -4,8 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.event.EventType;
+import javafx.geometry.Insets;
 import javafx.application.Platform;
-;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -21,8 +22,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Screen;
+import javafx.stage.Stage;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 
@@ -212,7 +214,6 @@ public class Main extends Application {
 			gameRoot.getChildren().remove(projectile);
 			projectilesToRemove.add(projectile);
 		}
-
 	}
 
 	public void clearLists() {
@@ -235,6 +236,13 @@ public class Main extends Application {
 	public void shoot() {
 		long timeNow = System.currentTimeMillis();
 		long time = timeNow - timeOfLastProjectile;
+		if (time < 0 || time > 500) {
+			Projectile projectile = new Projectile("file:src/sprites/Shot.png", player.getX(), player.getY(), 12, 12);
+			projectile.setVelocityX(5);
+			projectile.setVelocityY(5);//player.getVelocity().normalize().multiply(5));
+			//projectile.setTranslateX(player.getTranslateX());
+			//projectile.setTranslateY(player.getTranslateY());
+                }
 		if (time < 0 || time > 250) {
 			Projectile projectile = new Projectile("file:src/sprites/HomingShot.png", player.getX(), player.getY(), 24, 10);
 			projectile.setVelocityX(5);
