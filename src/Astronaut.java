@@ -1,6 +1,4 @@
 
-import java.util.ArrayList;
-import java.util.List;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -9,9 +7,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 
-public class Debris extends Pane {
 
-	//Create damage variable for player hit?
+public class Astronaut extends Pane {
 	public ImageView iv;
 	int offsetX = 0;
 	int offsetY = 0;
@@ -38,14 +35,13 @@ public class Debris extends Pane {
 
 	//currently used only for bosses
 	public Label nameLabel;
-
-	public Debris(String img, double x, double y, int health, int coin, int width, int height, Rectangle2D screenSize) {
-		this.setTranslateX(x);
+	public Astronaut(String img, double x, double y, int health, int coin, int width, int height, Rectangle2D screenSize){
+			this.setTranslateX(x);
 		this.setTranslateY(y);
 		this.x = x;
 		this.y = y;
 		//calcDistances(screenSize);
-		linepoints(screenSize, 350);
+		linepoints(screenSize, 250);
 		Image enemyImage = new Image(img);
 		ImageView enemyIV = new ImageView(enemyImage);
 		this.iv = enemyIV;
@@ -135,12 +131,7 @@ public class Debris extends Pane {
 	}
 
 	public boolean isEarthColliding(Earth earth) {
-            boolean colliding = false;
-            for (Rectangle rect : earth.collisionRects) {
-		if (this.getBoundsInParent().intersects(rect.getBoundsInParent())) {
-                    colliding = true;
-                }
-            }
-            return colliding;
+		return this.getBoundsInParent().intersects(earth.getBoundsInParent());
+
 	}
 }

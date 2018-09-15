@@ -28,19 +28,19 @@ public class Projectile extends Pane {
 	int velocityY = 0;
 	boolean alive = true;
 
-    public Projectile(String img, int posX, int posY, int width, int height) {
-            Image projImage = new Image(img);
-            ImageView projIV = new ImageView(projImage);
-            this.iv = projIV;
-            this.iv.setViewport(new Rectangle2D(offsetX, offsetY, width, height));
-            this.setTranslateX(posX);
-            this.setTranslateY(posY);
-            this.x = posX;
-            this.y = posY;
-            this.width = width;
-            this.height = height;
-            this.getChildren().addAll(iv);
-    }
+	public Projectile(String img, int posX, int posY, int width, int height) {
+		Image projImage = new Image(img);
+		ImageView projIV = new ImageView(projImage);
+		this.iv = projIV;
+		this.iv.setViewport(new Rectangle2D(offsetX, offsetY, width, height));
+		this.setTranslateX(posX);
+		this.setTranslateY(posY);
+		this.x = posX;
+		this.y = posY;
+		this.width = width;
+		this.height = height;
+		this.getChildren().addAll(iv);
+	}
 
 	/*public void move() {
 		this.setTranslateX(this.getTranslateX() + this.getVelocityX());
@@ -53,12 +53,12 @@ public class Projectile extends Pane {
 		this.iv.setRotate(rotation);
 
 		if (!speedSet) {
-			vx = -1*(this.getVelocityX() * (90 - Math.abs(rotation)) / 90);
+			vx = -1 * (this.getVelocityX() * (90 - Math.abs(rotation)) / 90);
 			if (rotation < 0) {
-				vy = -1*(-this.getVelocityX() + Math.abs(vx));
+				vy = -1 * (-this.getVelocityX() + Math.abs(vx));
 				speedSet = true;
 			} else {
-				vy = -1*(this.getVelocityX() - Math.abs(vx));
+				vy = -1 * (this.getVelocityX() - Math.abs(vx));
 				speedSet = true;
 			}
 		}
@@ -99,5 +99,9 @@ public class Projectile extends Pane {
 
 	public boolean enemyColliding(Debris debris) {
 		return this.getBoundsInParent().intersects(debris.getBoundsInParent());
+	}
+
+	public boolean astroColliding(Astronaut astro) {
+		return this.getBoundsInParent().intersects(astro.getBoundsInParent());
 	}
 }
