@@ -91,7 +91,8 @@ public class Main extends Application {
     public void createGameRoot() {
         player = new Player((int) screenSize.getWidth(), (int) screenSize.getHeight());
         earth = new Earth("file:src/sprites/EarthM.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
+        Projectile rocket = new Projectile("file:src/sprites/rocket.png", 30,30,50,50, 5);
         gameRoot.setId("backgroundgame");
-        gameRoot.getChildren().addAll(earth);
+        gameRoot.getChildren().addAll(earth,rocket);
     }
 }
