@@ -219,7 +219,7 @@ public class Main extends Application {
 			randX = (Math.random() * (screenSize.getWidth() + 160) - 160);
 		}
 
-		Astronaut astronaut = new Astronaut("file:src/sprites/shot.png", randX, randY, 3, 1, 12, 12, screenSize);
+		Astronaut astronaut = new Astronaut("file:src/sprites/Astronaut.png", randX, randY, 3, 1, 50, 50, screenSize);
 		gameRoot.getChildren().add(astronaut);
 		astronauts.add(astronaut);
 	}
@@ -380,8 +380,15 @@ public class Main extends Application {
 				stage.getScene().setRoot(gameOverRoot);
 			});
 		});
+                
+            Button newBtn = new Button("NEW GAME");
+            newBtn.setOnAction(e -> {
+            stage.getScene().setRoot(gameRoot);
+            clearAll();
+            newGame();
+        });
 
-		vbox.getChildren().addAll(exitBtn);
+		vbox.getChildren().addAll(exitBtn, newBtn);
 		return vbox;
 	}
 
