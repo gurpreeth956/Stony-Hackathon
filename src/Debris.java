@@ -36,8 +36,7 @@ public class Debris extends Pane {
 	public int health;
 	public int totalHealth;
 
-	//currently used only for bosses
-	public Label nameLabel;
+        
 
 	public Debris(String img, double x, double y, int health, int coin, int width, int height, Rectangle2D screenSize) {
 		this.setTranslateX(x);
@@ -76,6 +75,8 @@ public class Debris extends Pane {
 		if (pointer < xpoints.length) {
 			this.setTranslateX(xpoints[pointer]);
 			this.setTranslateY(ypoints[pointer]);
+                        this.setX(xpoints[pointer]);
+                        this.setY(ypoints[pointer]);
 			pointer++;
 		}
 
@@ -143,4 +144,20 @@ public class Debris extends Pane {
             }
             return colliding;
 	}
+
+    public double getX() {
+        return x;
+    }
+
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    public double getY() {
+        return y;
+    }
+
+    public void setY(double y) {
+        this.y = y;
+    }
 }

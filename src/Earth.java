@@ -53,15 +53,15 @@ public class Earth extends Pane {
 		setPosition();
                 
                 collisionRects = new ArrayList();
-                middle = new Rectangle(this.getTranslateX() + 37, this.getTranslateY() + 10, 87, 140);
+                middle = new Rectangle(this.getTranslateX() + 40, this.getTranslateY() + 36, 72, 90);
                 middle.setFill(Color.TRANSPARENT);
-                left = new Rectangle(this.getTranslateX() + 9, this.getTranslateY() + 37, 30, 86);
-                left.setFill(Color.TRANSPARENT);
-                right = new Rectangle(this.getTranslateX() + 121, this.getTranslateY() + 37, 30, 86);
-                right.setFill(Color.TRANSPARENT);
+                //left = new Rectangle(this.getTranslateX() + 28, this.getTranslateY() + 40, 30, 80);
+                //left.setFill(Color.GREEN);
+                //right = new Rectangle(this.getTranslateX() + 120, this.getTranslateY() + 40, 18, 80);
+                //right.setFill(Color.GREEN);
                 collisionRects.add(middle);
-                collisionRects.add(left);
-                collisionRects.add(right);
+                //collisionRects.add(left);
+                //collisionRects.add(right);
 	}
 
 	public void setPosition() {

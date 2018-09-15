@@ -64,6 +64,9 @@ public class Main extends Application {
 
 	private List<Astronaut> astronauts = new ArrayList();
 	private List<Astronaut> astronautsToRemove = new ArrayList();
+        
+        private List<Explosion> explosions = new ArrayList();
+        private List<Explosion> explosToRemove = new ArrayList();
 
 	private final HashMap<KeyCode, Boolean> keys = new HashMap();
 	static Rectangle2D screenSize = Screen.getPrimary().getVisualBounds();
@@ -78,6 +81,7 @@ public class Main extends Application {
 		menuRoot = new BorderPane();
 		scene = new Scene(menuRoot, screenSize.getWidth(), screenSize.getHeight());
 		scene.getStylesheets().addAll(this.getClass().getResource("Design.css").toExternalForm());
+                menuRoot.setId("menu");
                 
                 final Task task = new Task() {
                     @Override
@@ -135,6 +139,7 @@ public class Main extends Application {
 		menuRoot.setCenter(menuBox);
 		menuBox.setAlignment(Pos.CENTER);
 		Text title = new Text("THE AWESOME SPACE GAME");
+                title.setFill(Color.WHITE);
 		title.setFont(Font.font("Arial", 50));
 		menuRoot.setTop(title);
 		BorderPane.setAlignment(title, Pos.TOP_CENTER);
@@ -166,6 +171,7 @@ public class Main extends Application {
 		if (gameplay) {
 			if (player.getHealth() == 0 || earth.getHealth() == 0) {
 				Text gameOver = new Text("Game Over \n Score:  " + player.getScore());
+                                gameOver.setFill(Color.WHITE);
 				gameOver.setFont(Font.font("Arial", 50));
 				gameOverRoot.setTop(gameOver);
 				BorderPane.setAlignment(gameOver, Pos.CENTER);
@@ -197,6 +203,9 @@ public class Main extends Application {
 			for (Astronaut astro : astronauts) {
 				updateAstronaut(astro);
 			}
+                        for (Explosion explo : explosions) {
+                            //updateExplosions(explo);
+                        }
                         
                         if (time < 0 || time > 250) {
                             if (isPressed(KeyCode.ESCAPE)) {
@@ -249,15 +258,17 @@ public class Main extends Application {
 		long timeNow = System.currentTimeMillis();
 		long time = timeNow - lastHitTime;
 		if (debri.isColliding(player)) {
-			if (time < 0 || time > 500) {
-				player.hit();
-				playerReceiveHit();
-				lastHitTime = timeNow;
-			}
-			debri.setAlive(false);
+                    if (time < 0 || time > 500) {
+                        player.hit();
+                        playerReceiveHit();
+                        lastHitTime = timeNow;
+                    }
+                    debri.setAlive(false);
 		}
 		if (debri.isEarthColliding(earth)) {
 			earth.hit();
+                        Explosion explo = new Explosion("file:src/sprites/Explosion.png", (int)debri.getX() + debri.width/2, (int)debri.getY() + debri.height/2, 22, 28);
+			gameRoot.getChildren().add(explo);
 			gameRoot.getChildren().remove(earthActualHealth);
 			earthActualHealth = new Rectangle(356, 21, earth.getHealth() * 108, 19);
 			earthActualHealth.setFill(Color.GREEN);
@@ -314,6 +325,18 @@ public class Main extends Application {
                         astro.middle.toFront();
 		}
 	}
+        
+        /*long spawnTime = 0;
+        public void updateExplosions(Explosion explo) {
+            explo.move();
+            long timeNow = System.currentTimeMillis();
+            long time = timeNow - spawnTime;
+            if (time < 0 || time > 900) {
+                gameRoot.getChildren().remove(explo);
+		explosToRemove.add(explo);
+                spawnTime = timeNow;
+            }
+        }*/
 
 	public boolean isPressed(KeyCode key) {
 		return keys.getOrDefault(key, false);
@@ -354,6 +377,7 @@ public class Main extends Application {
 		projectiles.removeAll(projectilesToRemove);
 		debris.removeAll(debrisToRemove);
 		astronauts.removeAll(astronautsToRemove);
+                explosions.removeAll(explosToRemove);
 		projectilesToRemove.clear();
 		debrisToRemove.clear();
 		astronautsToRemove.clear();
@@ -423,17 +447,18 @@ public class Main extends Application {
 		VBox gameOverBox = addGameOverButtons(stage);
 		gameOverBox.setAlignment(Pos.TOP_CENTER);
 		gameOverRoot = new BorderPane();
-		gameOverRoot.setId("menu");
 		gameOverRoot.setCenter(gameOverBox);
 		exitRoot = new VBox(20);
-		Label exitString = new Label("Are you sure you want to exit?");
+		Text exitString = new Text("Are you sure you want to exit?");
+                exitString.setFill(Color.WHITE);
 		exitString.setFont(Font.font("Arial", 25));
 		HBox exitButtons = new HBox(10);
 		exitButtons.getChildren().addAll(yesExit, noExit);
 		exitButtons.setAlignment(Pos.CENTER);
 		exitRoot.getChildren().addAll(exitString, exitButtons);
-		exitRoot.setId("menu");
 		exitRoot.setAlignment(Pos.CENTER);
+                gameOverRoot.setId("menu");
+                exitRoot.setId("menu");
 	}
 
 	public VBox addGameOverButtons(Stage stage) {
@@ -478,6 +503,7 @@ public class Main extends Application {
         if (alreadyStarted) {
             gameRoot.getChildren().removeAll(player, earth, health, healthBarOutline, lostHealth,
                             actualHealth, coinAndScore, earthActualHealth, earthHealthBar, earthLostHealth);
+            explosions.clear();
         }
             player = new Player("file:src/sprites/player.png", 5, 25, 25, (int) screenSize.getWidth(), (int) screenSize.getHeight());
             earth = new Earth("file:src/sprites/Earth.png", 5, 160, 160, (int) screenSize.getWidth(), (int) screenSize.getHeight());
@@ -501,13 +527,14 @@ public class Main extends Application {
             alreadyStarted = true;
             
             //Collision rectangle additions
-            gameRoot.getChildren().addAll(earth.middle, earth.left, earth.right);
+            gameRoot.getChildren().addAll(earth.middle);
             
     }
    
     public void createHowRoot() {
             howRoot = new BorderPane();
             Text howText = new Text("Use arrow keys to move shuttle and space bar to shoot. Destroy the asteroids and save the astronauts.");
+            howText.setFill(Color.WHITE);
             howText.setFont(Font.font("Arial", 20));
             howRoot.setCenter(howText);
             BorderPane.setAlignment(howText, Pos.CENTER);
@@ -518,8 +545,10 @@ public class Main extends Application {
                     BorderPane.setAlignment(menuBox, Pos.CENTER);
             });
             howRoot.setBottom(backBtn);
+            howRoot.setId("menu");
             BorderPane.setAlignment(backBtn, Pos.BOTTOM_CENTER);
             BorderPane.setMargin(backBtn, new Insets(50));
+            
     }
     
     public void createPauseRoot() {
@@ -566,12 +595,13 @@ public class Main extends Application {
             vbox.getChildren().addAll(resume, backToMenu, newBtn, exitBtn);
             
             Text title = new Text("PAUSE MENU");
+            title.setFill(Color.WHITE);
 		title.setFont(Font.font("Arial", 50));
                 
             pauseRoot.setTop(title);
             pauseRoot.setCenter(vbox);
+            pauseRoot.setId("menu");
             BorderPane.setAlignment(vbox, Pos.TOP_CENTER);
-            
             BorderPane.setAlignment(title, Pos.TOP_CENTER);
             BorderPane.setMargin(title, new Insets(100));
     }
