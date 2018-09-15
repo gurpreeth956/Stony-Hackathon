@@ -2,8 +2,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javafx.animation.AnimationTimer;
-import javafx.application.Application;
-import javafx.event.EventType;
+import javafx.application.Application;;
 import javafx.geometry.Insets;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
@@ -199,7 +198,7 @@ public class Main extends Application {
 		long timeNow = System.currentTimeMillis();
 		long time = timeNow - timeOfLastProjectile;
 		if (time < 0 || time > 500) {
-			Projectile projectile = new Projectile("file:src/sprites/Shot.png", player.getX(), player.getY(), 12, 12);
+			Projectile projectile = new Projectile("file:src/sprites/HomingShot.png", player.getX(), player.getY(), 24, 10);
 			projectile.setVelocityX(5);
 			projectile.setVelocityY(5);//player.getVelocity().normalize().multiply(5));
 			//projectile.setTranslateX(player.getTranslateX());
