@@ -14,4 +14,33 @@ public class Player {
     
     int health = 5;
     boolean alive = true;
+    
+    public Player(int posX, int posY) {
+        this.x = posX;
+        this.y = posY;
+    }
+    
+    public void move() {
+        
+    }
+    
+    
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+    
+    
 }
