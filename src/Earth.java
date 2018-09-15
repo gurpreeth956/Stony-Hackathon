@@ -51,4 +51,14 @@ public class Earth extends Pane {
     public void hit(){
         health--;
     }
+
+	
+
+	public int getX() {
+		return x;
+	}
+
+	public int getY() {
+		return y;
+	}
 }
