@@ -14,7 +14,7 @@ public class Earth extends Pane {
 	int width;
 	int height;
 	public int x; //Earth xPos
-	public int y; //Earth yPOS
+	public int y; //Earth yPoS
 	int screenWidth;
 	int screenHeight;
 
