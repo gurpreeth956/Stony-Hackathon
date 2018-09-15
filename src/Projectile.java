@@ -4,6 +4,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Rectangle;
 
 public class Projectile extends Pane {
 
@@ -41,6 +42,10 @@ public class Projectile extends Pane {
             this.getChildren().addAll(iv);
     }
 
+	/*public void move() {
+		this.setTranslateX(this.getTranslateX() + this.getVelocityX());
+		this.setTranslateY(this.getTranslateY() + this.getVelocityY());
+	}*/
 	public void move(Earth earth) {
 		targetX = earth.getX() - this.x;
 		targetY = earth.getY() - this.y;
