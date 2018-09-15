@@ -29,12 +29,12 @@ public class Main extends Application {
 	Stage stage;
 	Scene scene;
 	static Pane gameRoot;
-	static BorderPane menuRoot, gameOverRoot;
+	static BorderPane menuRoot, gameOverRoot, howRoot;
 
 	static Player player;
 	Earth earth;
 
-	static VBox exitRoot;
+	static VBox exitRoot, menuBox;
 
 	private long lastHitTime = 0;
 	private long timeOfLastProjectile = 0;
@@ -73,20 +73,27 @@ public class Main extends Application {
 
 		createGameRoot();
 		createGameOverRoot();
+		createHowRoot();
 		scene.setOnKeyPressed(e -> keys.put(e.getCode(), true));
 		scene.setOnKeyReleased(e -> keys.put(e.getCode(), false));
 
-		Button bttn = new Button("Start");
-		bttn.setOnAction(e -> {
+		Button startBtn = new Button("Start");
+		startBtn.setOnAction(e -> {
 			stage.getScene().setRoot(gameRoot);
 			newGame();
 		});
-
-		menuRoot.setCenter(bttn);
+		Button playBtn = new Button("How to Play");
+		playBtn.setOnAction(e -> {
+			stage.getScene().setRoot(howRoot);
+		});
+		menuBox = new VBox(10);
+		menuBox.getChildren().addAll(startBtn, playBtn);
+		menuRoot.setCenter(menuBox);
 		Text title = new Text("THE AWESOME SPACE GAME");
 		title.setFont(Font.font("Arial", 50));
 		menuRoot.setTop(title);
 		BorderPane.setAlignment(title, Pos.TOP_CENTER);
+		BorderPane.setAlignment(menuBox, Pos.CENTER);
 		BorderPane.setMargin(title, new Insets(100));
 
 		AnimationTimer timer = new AnimationTimer() {
@@ -344,6 +351,21 @@ public class Main extends Application {
 		earthLostHealth.setFill(Color.RED);
 		earthActualHealth = new Rectangle(356, 21, 540, 19);
 		earthActualHealth.setFill(Color.GREEN);
+	}
+
+	public void createHowRoot() {
+		howRoot = new BorderPane();
+		Text howText = new Text("Use arrow keys to move shuttle and space bar to shoot. Destroy the asteroids and save the astronauts.");
+		howText.setFont(Font.font("Arial", 20));
+		howRoot.setCenter(howText);
+		BorderPane.setAlignment(howText, Pos.CENTER);
+		BorderPane.setMargin(howText, new Insets(10));
+		Button backBtn = new Button("Back to Menu");
+		backBtn.setOnAction(e -> {
+			stage.getScene().setRoot(menuRoot);
+		});
+		howRoot.setBottom(backBtn);
+		BorderPane.setAlignment(backBtn, Pos.BOTTOM_CENTER);
 	}
 
 	public void newGame() {
