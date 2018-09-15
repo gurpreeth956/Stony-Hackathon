@@ -108,6 +108,7 @@ public class Main extends Application {
 					projectile.setAlive(false);
 					debris.setAlive(false);
 					scoreLabel.setText("Score: " + player.getScore());
+					scoreLabel.setTextFill(Color.WHITE);
 				}
 			}
 			if(!projectile.isAlive()){
