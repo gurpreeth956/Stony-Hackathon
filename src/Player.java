@@ -105,6 +105,10 @@ public class Player extends Pane {
 		score++;
 	}
 	
+	public void decreaseScore(){
+		score--;
+	}
+	
 	public int getScore(){
 		return score;
 	}
